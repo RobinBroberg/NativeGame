@@ -10,7 +10,7 @@ export default function Ball({ body, radius }) {
       style={{
         position: "absolute",
         left: x,
-        top: y,
+        top: y + 2,
         width: radius * 2,
         height: radius * 2,
         transform: [{ rotate: `${angle}rad` }],

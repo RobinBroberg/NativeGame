@@ -10,28 +10,6 @@ import { Physics, getTiltRef } from "../systems/Physics";
 
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
-// const Physics = (entities, { time }) => {
-//   const engine = entities.physics.engine;
-//   const ball = entities.ball.body;
-//   const cameraY = entities.physics.cameraY;
-//   const setScrollY = entities.physics.setScrollY;
-
-//   Matter.Engine.update(engine, Math.min(time.delta, 16.666));
-
-//   const tilt = tiltRef.current;
-//   Matter.Body.setVelocity(ball, {
-//     x: tilt * 10,
-//     y: ball.velocity.y,
-//   });
-
-//   // Update camera scroll
-//   const newOffset = Math.min(0, HEIGHT * 0.7 - ball.position.y);
-//   cameraY.current = newOffset;
-//   setScrollY(newOffset); //
-
-//   return entities;
-// };
-
 export default function Game() {
   const [scrollY, setScrollY] = useState(0);
   const cameraY = useRef(0);
@@ -56,8 +34,28 @@ export default function Game() {
     return () => subscription.remove();
   }, []);
 
+  const isBallTouching = useRef(false);
+
+  useEffect(() => {
+    Matter.Events.on(engine, "collisionStart", (event) => {
+      event.pairs.forEach(({ bodyA, bodyB }) => {
+        if (bodyA === ball || bodyB === ball) {
+          isBallTouching.current = true;
+        }
+      });
+    });
+
+    Matter.Events.on(engine, "collisionEnd", (event) => {
+      event.pairs.forEach(({ bodyA, bodyB }) => {
+        if (bodyA === ball || bodyB === ball) {
+          isBallTouching.current = false;
+        }
+      });
+    });
+  }, []);
+
   const entities = {
-    physics: { engine, world, cameraY, setScrollY },
+    physics: { engine, world, cameraY, setScrollY, isBallTouching },
     ball: { body: ball, radius: 20, renderer: Ball },
     ground: { body: ground, size: [WIDTH, 40], renderer: Platform },
   };

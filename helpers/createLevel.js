@@ -7,7 +7,7 @@ export default function createLevel() {
   const ball = Matter.Bodies.circle(WIDTH / 2, 100, 20, {
     friction: 0.01,
     frictionAir: 0.01,
-    restitution: 0.6,
+    restitution: 0.5,
     mass: 1,
     inertia: Infinity,
     inverseInertia: 0,
@@ -19,7 +19,9 @@ export default function createLevel() {
   });
 
   const platforms = [
-    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT / 2, 150, 20, { isStatic: true }),
+    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT / 2.5, 150, 20, {
+      isStatic: true,
+    }),
     Matter.Bodies.rectangle(WIDTH / 3, HEIGHT + 100, 120, 20, {
       isStatic: true,
     }),
