@@ -16,19 +16,13 @@ export const Physics = (entities, { time }) => {
 
   const tilt = tiltRef.current;
 
-  if (entities.physics.isBallTouching?.current) {
-    Matter.Body.setVelocity(ball, {
-      x: tilt * 10,
-      y: ball.velocity.y,
-    });
+  const forceMagnitude = tilt * 0.001;
+  Matter.Body.applyForce(ball, ball.position, { x: forceMagnitude, y: 0 });
 
-    Matter.Body.setAngularVelocity(ball, tilt * 0.5);
-  } else {
-    Matter.Body.setVelocity(ball, {
-      x: tilt * 8,
-      y: ball.velocity.y,
-    });
+  if (entities.physics.isBallTouching?.current) {
+    Matter.Body.setAngularVelocity(ball, tilt * 0.6);
   }
+
   const newOffset = Math.min(0, HEIGHT * 0.7 - ball.position.y);
   cameraY.current = newOffset;
   setScrollY(newOffset);

@@ -19,6 +19,7 @@ export default function Platform({ body, size, cameraY }) {
         height,
         backgroundColor: "brown",
         borderRadius: 5,
+        transform: [{ rotate: `${body.angle}rad` }],
       }}
     />
   );
