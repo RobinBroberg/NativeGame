@@ -7,7 +7,7 @@ export default function createLevel() {
   const ball = Matter.Bodies.circle(WIDTH / 2, 100, 20, {
     friction: 0.01,
     frictionAir: 0.01,
-    restitution: 0.2,
+    restitution: 0.6,
     mass: 1,
     inertia: Infinity,
     inverseInertia: 0,
