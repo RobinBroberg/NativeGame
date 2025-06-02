@@ -1,0 +1,35 @@
+import Matter from "matter-js";
+import { Dimensions } from "react-native";
+
+const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
+
+export default function createLevel() {
+  const ball = Matter.Bodies.circle(WIDTH / 2, 100, 20, {
+    friction: 0.01,
+    frictionAir: 0.01,
+    restitution: 0.2,
+    mass: 1,
+    inertia: Infinity,
+    inverseInertia: 0,
+  });
+
+  const ground = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 2000, WIDTH, 40, {
+    isStatic: true,
+    friction: 0.05,
+  });
+
+  const platforms = [
+    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT / 2, 150, 20, { isStatic: true }),
+    Matter.Bodies.rectangle(WIDTH / 3, HEIGHT + 100, 120, 20, {
+      isStatic: true,
+    }),
+    Matter.Bodies.rectangle(WIDTH * 0.75, HEIGHT + 250, 160, 20, {
+      isStatic: true,
+    }),
+    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 400, 150, 20, {
+      isStatic: true,
+    }),
+  ];
+
+  return { ball, ground, platforms };
+}
