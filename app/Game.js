@@ -10,7 +10,9 @@ import { Physics, getTiltRef } from "../systems/Physics";
 
 export default function Game() {
   const [scrollY, setScrollY] = useState(0);
+  const [scrollX, setScrollX] = useState(0);
   const cameraY = useRef(0);
+  const cameraX = useRef(0);
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
   ).current;
@@ -53,7 +55,15 @@ export default function Game() {
   }, []);
 
   const entities = {
-    physics: { engine, world, cameraY, setScrollY, isBallTouching },
+    physics: {
+      engine,
+      world,
+      cameraY,
+      cameraX,
+      setScrollX,
+      setScrollY,
+      isBallTouching,
+    },
     ball: { body: ball, radius: 20, renderer: Ball },
     // ground: { body: ground, size: [WIDTH, 40], renderer: Platform },
   };
@@ -68,7 +78,12 @@ export default function Game() {
 
   return (
     <View style={styles.container}>
-      <View style={{ flex: 1, transform: [{ translateY: scrollY }] }}>
+      <View
+        style={{
+          flex: 1,
+          transform: [{ translateY: scrollY }, { translateX: scrollX }],
+        }}
+      >
         <GameEngine
           systems={[Physics]}
           entities={entities}

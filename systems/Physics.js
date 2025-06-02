@@ -1,7 +1,7 @@
 import Matter from "matter-js";
-import { Dimensions, TouchableWithoutFeedbackComponent } from "react-native";
+import { Dimensions } from "react-native";
 
-const { height: HEIGHT } = Dimensions.get("window");
+const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
 const tiltRef = { current: 0 };
 export const getTiltRef = () => tiltRef;
@@ -9,8 +9,7 @@ export const getTiltRef = () => tiltRef;
 export const Physics = (entities, { time }) => {
   const engine = entities.physics.engine;
   const ball = entities.ball.body;
-  const cameraY = entities.physics.cameraY;
-  const setScrollY = entities.physics.setScrollY;
+  const { cameraY, setScrollY, cameraX, setScrollX } = entities.physics;
 
   Matter.Engine.update(engine, Math.min(time.delta, 16.666));
 
@@ -26,6 +25,10 @@ export const Physics = (entities, { time }) => {
   const newOffset = Math.min(0, HEIGHT * 0.7 - ball.position.y);
   cameraY.current = newOffset;
   setScrollY(newOffset);
+
+  const offsetX = WIDTH / 2 - ball.position.x;
+  cameraX.current = offsetX;
+  setScrollX(offsetX);
 
   return entities;
 };
