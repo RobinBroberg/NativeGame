@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
@@ -8,8 +8,6 @@ import Platform from "../components/Platform";
 import createLevel from "../helpers/createLevel";
 import { Physics, getTiltRef } from "../systems/Physics";
 
-const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
-
 export default function Game() {
   const [scrollY, setScrollY] = useState(0);
   const cameraY = useRef(0);
@@ -17,12 +15,12 @@ export default function Game() {
     Matter.Engine.create({ enableSleeping: false })
   ).current;
   const world = engine.world;
-  const { ball, ground, platforms } = createLevel();
+  const { ball, platforms } = createLevel();
 
   const tiltRef = getTiltRef();
 
   useEffect(() => {
-    Matter.World.add(world, [ball, ground, ...platforms]);
+    Matter.World.add(world, [ball, ...platforms]);
 
     let smoothed = 0;
     Accelerometer.setUpdateInterval(16);
@@ -57,7 +55,7 @@ export default function Game() {
   const entities = {
     physics: { engine, world, cameraY, setScrollY, isBallTouching },
     ball: { body: ball, radius: 20, renderer: Ball },
-    ground: { body: ground, size: [WIDTH, 40], renderer: Platform },
+    // ground: { body: ground, size: [WIDTH, 40], renderer: Platform },
   };
 
   platforms.forEach((platform, i) => {

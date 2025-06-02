@@ -13,31 +13,44 @@ export default function createLevel() {
     inverseInertia: 0,
   });
 
-  const ground = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 2000, WIDTH, 40, {
-    isStatic: true,
-    friction: 0.06,
-  });
+  // const ground = Matter.Bodies.rectangle(WIDTH / 2, 20000, WIDTH * 2, 60, {
+  //   isStatic: true,
+  //   friction: 0.06,
+  // });
 
-  const platforms = [
-    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT / 2.5, 150, 20, {
-      isStatic: true,
-    }),
-    Matter.Bodies.rectangle(WIDTH / 3, HEIGHT + 100, 120, 20, {
-      isStatic: true,
-    }),
-    Matter.Bodies.rectangle(WIDTH * 0.75, HEIGHT + 250, 160, 20, {
-      isStatic: true,
-    }),
-    Matter.Bodies.rectangle(WIDTH / 2 - 90, HEIGHT + 600, 200, 25, {
-      isStatic: true,
-      angle: Math.PI / 6,
-    }),
+  const platforms = [];
 
-    Matter.Bodies.rectangle(WIDTH / 2 + 90, HEIGHT + 800, 200, 25, {
+  const startingPlatform = Matter.Bodies.rectangle(
+    WIDTH / 2,
+    HEIGHT / 3.5,
+    150,
+    20,
+    {
       isStatic: true,
-      angle: -Math.PI / 6,
-    }),
-  ];
+      angle: 0,
+      friction: 0.6,
+    }
+  );
+  platforms.push(startingPlatform);
 
-  return { ball, ground, platforms };
+  const count = 20;
+  const spacing = 200;
+
+  for (let i = 0; i < count; i++) {
+    const y = HEIGHT / 2 + i * spacing;
+    const width = 120 + Math.random() * 80;
+    const x = 50 + Math.random() * (WIDTH - 100);
+    const angle =
+      i % 2 === 0 ? (Math.random() > 0.5 ? Math.PI / 5 : -Math.PI / 5) : 0;
+
+    const platform = Matter.Bodies.rectangle(x, y, width, 20, {
+      isStatic: true,
+      friction: 0.6,
+      angle,
+    });
+
+    platforms.push(platform);
+  }
+
+  return { ball, platforms };
 }
