@@ -22,7 +22,7 @@ export const Physics = (entities, { time }) => {
     Matter.Body.setAngularVelocity(ball, tilt * 0.6);
   }
 
-  const newOffset = Math.min(0, HEIGHT * 0.7 - ball.position.y);
+  const newOffset = HEIGHT * 0.5 - ball.position.y;
   cameraY.current = newOffset;
   setScrollY(newOffset);
 
