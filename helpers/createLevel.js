@@ -5,6 +5,15 @@ const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
 export default function createLevel() {
   const platforms = [
+    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1350, 220, 20, {
+      isStatic: true,
+      friction: 0.6,
+    }),
+    Matter.Bodies.rectangle(WIDTH * 0.75, HEIGHT - 1100, 220, 20, {
+      isStatic: true,
+      angle: Math.PI / 6,
+      friction: 0.6,
+    }),
     Matter.Bodies.rectangle(WIDTH / 2.5, HEIGHT - 900, 250, 20, {
       isStatic: true,
       friction: 0.6,
