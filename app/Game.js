@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Dimensions,
+  Text,
 } from "react-native";
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
@@ -12,10 +13,14 @@ import Ball from "./components/Ball";
 import Platform from "./components/Platform";
 import createLevel from "./helpers/createLevel";
 import Physics, { getTiltRef } from "./systems/Physics";
+import GoalPlatform from "./components/GoalPlatform";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
 export default function Game() {
+  const [timer, setTimer] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [hasFinished, setHasFinished] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [scrollX, setScrollX] = useState(0);
   const cameraY = useRef(0);
@@ -24,7 +29,7 @@ export default function Game() {
     Matter.Engine.create({ enableSleeping: false })
   ).current;
   const world = engine.world;
-  const { ball, platforms } = useRef(createLevel()).current;
+  const { ball, platforms, goalPlatform } = useRef(createLevel()).current;
 
   const tiltRef = getTiltRef();
   const jumpCount = useRef(0);
@@ -51,6 +56,11 @@ export default function Game() {
         if (bodyA === ball || bodyB === ball) {
           isBallTouching.current = true;
           jumpCount.current = 0; // reset on contact
+        }
+        const other = bodyA === ball ? bodyB : bodyA;
+        if (other.label === "goal") {
+          setHasFinished(true);
+          setIsRunning(false);
         }
       });
     });
@@ -84,6 +94,11 @@ export default function Game() {
       renderer: Platform,
     };
   });
+  entities["goalPlatform"] = {
+    body: goalPlatform,
+    size: [goalPlatform.bounds.max.x - goalPlatform.bounds.min.x, 15],
+    renderer: GoalPlatform,
+  };
 
   const handleJump = useCallback(() => {
     if (jumpCount.current < maxJumps) {
@@ -93,11 +108,31 @@ export default function Game() {
       });
       jumpCount.current += 1;
     }
+    if (!isRunning) {
+      setIsRunning(true);
+    }
   }, [ball]);
+
+  useEffect(() => {
+    let interval;
+
+    if (isRunning && !hasFinished) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev + 0.1);
+      }, 100);
+    }
+
+    return () => clearInterval(interval);
+  }, [isRunning, hasFinished]);
 
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
       <View style={styles.container}>
+        <View style={styles.overlay}>
+          {hasFinished && <Text style={styles.goalText}>GOAL</Text>}
+          <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
+        </View>
+
         <View
           style={{
             height: HEIGHT * 5,
@@ -120,5 +155,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#aee2ff",
+  },
+  overlay: {
+    position: "absolute",
+    top: 30,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 10,
+  },
+  goalText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#28a745",
+    marginBottom: 8,
+  },
+  timer: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#333",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
 });

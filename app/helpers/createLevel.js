@@ -4,6 +4,17 @@ import { Dimensions } from "react-native";
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
 export default function createLevel() {
+  const goalPlatform = Matter.Bodies.rectangle(
+    WIDTH / 2,
+    HEIGHT - 1500,
+    70,
+    15,
+    {
+      isStatic: true,
+      isSensor: true,
+      label: "goal",
+    }
+  );
   const platforms = [
     Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1350, 220, 20, {
       isStatic: true,
@@ -119,5 +130,5 @@ export default function createLevel() {
     }
   );
 
-  return { ball, platforms };
+  return { ball, platforms: [...platforms, goalPlatform], goalPlatform };
 }
