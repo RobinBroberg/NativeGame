@@ -18,6 +18,16 @@ export const Physics = (entities, { time }) => {
   const forceMagnitude = tilt * 0.001;
   Matter.Body.applyForce(ball, ball.position, { x: forceMagnitude, y: 0 });
 
+  if (entities.ball && entities.physics.lowestPlatformY) {
+    const ballY = entities.ball.body.position.y;
+    const threshold = entities.physics.lowestPlatformY + 200;
+
+    if (ballY > threshold) {
+      entities.physics.setIsGameOver(true);
+      Matter.Engine.clear(engine);
+    }
+  }
+
   if (entities.physics.isBallTouching?.current) {
     Matter.Body.setAngularVelocity(ball, tilt * 0.6);
   }

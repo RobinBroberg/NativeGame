@@ -4,7 +4,7 @@ import { Dimensions } from "react-native";
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
 export default function createLevel() {
-  const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1560, 90, 10, {
+  const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1575, 90, 1, {
     isStatic: true,
     isSensor: false,
     label: "goal-bar",
@@ -15,18 +15,39 @@ export default function createLevel() {
     WIDTH / 2,
     HEIGHT - 1500,
     70,
-    15,
+    10,
     {
       isStatic: true,
       isSensor: true,
       label: "goal",
     }
   );
+
+  const walls = [
+    Matter.Bodies.rectangle(WIDTH * 1.6, HEIGHT - 1200, 20, 220, {
+      isStatic: true,
+      friction: 0.6,
+    }),
+  ];
+
   const platforms = [
+    Matter.Bodies.rectangle(WIDTH / 2.6, HEIGHT - 1550, 10, 1, {
+      isStatic: true,
+      friction: 0.6,
+      angle: Math.PI / 2,
+      label: "goal-post",
+    }),
+    Matter.Bodies.rectangle(WIDTH / 1.6, HEIGHT - 1550, 10, 1, {
+      isStatic: true,
+      friction: 0.6,
+      angle: Math.PI / 2,
+      label: "goal-post",
+    }),
     Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1350, 220, 20, {
       isStatic: true,
       friction: 0.6,
     }),
+
     Matter.Bodies.rectangle(WIDTH * 0.75, HEIGHT - 1100, 220, 20, {
       isStatic: true,
       angle: Math.PI / 6,
@@ -63,7 +84,6 @@ export default function createLevel() {
       friction: 0.6,
     }),
 
-    // Angled pair
     Matter.Bodies.rectangle(WIDTH / 2 - 90, HEIGHT + 550, 250, 20, {
       isStatic: true,
       angle: Math.PI / 6,
@@ -74,14 +94,10 @@ export default function createLevel() {
       angle: -Math.PI / 6,
       friction: 0.6,
     }),
-
-    // Flat catch
     Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 1000, 200, 20, {
       isStatic: true,
       friction: 0.6,
     }),
-
-    // Slight angle to roll toward center
     Matter.Bodies.rectangle(WIDTH / 4, HEIGHT + 1200, 200, 20, {
       isStatic: true,
       angle: Math.PI / 18,
@@ -92,14 +108,11 @@ export default function createLevel() {
       angle: -Math.PI / 18,
       friction: 0.6,
     }),
-
-    // Long flat landing
     Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 1600, 250, 20, {
       isStatic: true,
       friction: 0.6,
     }),
 
-    // Bounce ramp
     Matter.Bodies.rectangle(WIDTH / 2 - 100, HEIGHT + 1850, 250, 20, {
       isStatic: true,
       angle: Math.PI / 10,
@@ -110,8 +123,6 @@ export default function createLevel() {
       angle: -Math.PI / 10,
       friction: 0.6,
     }),
-
-    // Final straight catcher
     Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 2200, 500, 20, {
       isStatic: true,
       friction: 1.0,
@@ -122,7 +133,6 @@ export default function createLevel() {
     return current.position.y > lowest.position.y ? current : lowest;
   }, platforms[0]);
 
-  // Position ball slightly above the lowest platform
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
     lowestPlatform.position.y - 30, // adjust distance above platform
@@ -139,7 +149,9 @@ export default function createLevel() {
 
   return {
     ball,
-    platforms: [...platforms, goalPlatform, goalTopBar],
+    platforms: [...platforms, ...walls, goalPlatform, goalTopBar],
+    walls,
     goalPlatform,
+    lowestPlatformY: lowestPlatform.position.y,
   };
 }

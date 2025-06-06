@@ -14,6 +14,7 @@ import Platform from "./components/Platform";
 import createLevel from "./helpers/createLevel";
 import Physics, { getTiltRef } from "./systems/Physics";
 import GoalPlatform from "./components/GoalPlatform";
+import Wall from "./components/Wall";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -21,6 +22,7 @@ export default function Game() {
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [scrollX, setScrollX] = useState(0);
   const cameraY = useRef(0);
@@ -29,7 +31,9 @@ export default function Game() {
     Matter.Engine.create({ enableSleeping: false })
   ).current;
   const world = engine.world;
-  const { ball, platforms, goalPlatform } = useRef(createLevel()).current;
+  const { ball, platforms, goalPlatform, walls, lowestPlatformY } = useRef(
+    createLevel()
+  ).current;
 
   const tiltRef = getTiltRef();
   const jumpCount = useRef(0);
@@ -58,7 +62,7 @@ export default function Game() {
           jumpCount.current = 0; // reset on contact
         }
         const other = bodyA === ball ? bodyB : bodyA;
-        if (other.label === "goal") {
+        if (other.label === "goal-bar") {
           setHasFinished(true);
           setIsRunning(false);
         }
@@ -83,17 +87,34 @@ export default function Game() {
       setScrollX,
       setScrollY,
       isBallTouching,
+      setIsGameOver,
+      lowestPlatformY,
     },
   };
 
   platforms.forEach((platform, i) => {
-    if (platform.label !== "goal" && platform.label !== "goal-bar") {
+    if (
+      platform.label !== "goal" &&
+      platform.label !== "goal-bar" &&
+      platform.label !== "goal-post"
+    ) {
       entities[`platform${i}`] = {
         body: platform,
         size: [platform.bounds.max.x - platform.bounds.min.x, 20],
         renderer: Platform,
       };
     }
+  });
+
+  walls.forEach((wall, i) => {
+    entities[`wall${i}`] = {
+      body: wall,
+      size: [
+        wall.bounds.max.x - wall.bounds.min.x,
+        wall.bounds.max.y - wall.bounds.min.y,
+      ],
+      renderer: Wall,
+    };
   });
 
   entities["goalPlatform"] = {
@@ -124,14 +145,14 @@ export default function Game() {
   useEffect(() => {
     let interval;
 
-    if (isRunning && !hasFinished) {
+    if (isRunning && !hasFinished && !isGameOver) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 0.1);
       }, 100);
     }
 
     return () => clearInterval(interval);
-  }, [isRunning, hasFinished]);
+  }, [isRunning, hasFinished, isGameOver]);
 
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
@@ -140,6 +161,11 @@ export default function Game() {
           {hasFinished && <Text style={styles.goalText}>GOAL</Text>}
           <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
         </View>
+        {isGameOver && (
+          <View style={styles.gameOverText}>
+            <Text style={styles.gameOverTextText}>Game Over</Text>
+          </View>
+        )}
 
         <View
           style={{
@@ -186,5 +212,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,
+  },
+  gameOverText: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
+  gameOverTextText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "red",
   },
 });
