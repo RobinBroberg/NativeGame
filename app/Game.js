@@ -158,12 +158,12 @@ export default function Game() {
     <TouchableWithoutFeedback onPress={handleJump}>
       <View style={styles.container}>
         <View style={styles.overlay}>
-          {hasFinished && <Text style={styles.goalText}>GOAL</Text>}
+          {hasFinished && <Text style={styles.goalText}>FINISH</Text>}
           <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
         </View>
-        {isGameOver && (
-          <View style={styles.gameOverText}>
-            <Text style={styles.gameOverTextText}>Game Over</Text>
+        {isGameOver && !hasFinished && (
+          <View style={styles.gameOverView}>
+            <Text style={styles.gameOverText}>Game Over</Text>
           </View>
         )}
 
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 10,
   },
-  gameOverText: {
+  gameOverView: {
     position: "absolute",
     top: 0,
     bottom: 0,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 10,
   },
-  gameOverTextText: {
+  gameOverText: {
     fontSize: 32,
     fontWeight: "bold",
     color: "red",
