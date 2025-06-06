@@ -87,7 +87,7 @@ export default function Game() {
   };
 
   platforms.forEach((platform, i) => {
-    if (platform.label !== "goal") {
+    if (platform.label !== "goal" && platform.label !== "goal-bar") {
       entities[`platform${i}`] = {
         body: platform,
         size: [platform.bounds.max.x - platform.bounds.min.x, 20],

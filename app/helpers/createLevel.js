@@ -125,7 +125,7 @@ export default function createLevel() {
   // Position ball slightly above the lowest platform
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 4000, // adjust distance above platform
+    lowestPlatform.position.y - 30, // adjust distance above platform
     20,
     {
       friction: 0.05,
