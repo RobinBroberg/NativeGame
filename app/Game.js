@@ -8,10 +8,10 @@ import {
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
-import Ball from "../components/Ball";
-import Platform from "../components/Platform";
-import createLevel from "../helpers/createLevel";
-import { Physics, getTiltRef } from "../systems/Physics";
+import Ball from "./components/Ball";
+import Platform from "./components/Platform";
+import createLevel from "./helpers/createLevel";
+import Physics, { getTiltRef } from "./systems/Physics";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -97,10 +97,10 @@ export default function Game() {
 
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
-      <View style={StyleSheet.absoluteFill}>
+      <View style={styles.container}>
         <View
           style={{
-            height: HEIGHT * 5, // large enough to scroll through
+            height: HEIGHT * 5,
             width: WIDTH,
             transform: [{ translateY: scrollY }, { translateX: scrollX }],
           }}
@@ -119,6 +119,6 @@ export default function Game() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#d0e6f7",
+    backgroundColor: "#aee2ff",
   },
 });

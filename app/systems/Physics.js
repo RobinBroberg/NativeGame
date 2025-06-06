@@ -32,3 +32,5 @@ export const Physics = (entities, { time }) => {
 
   return entities;
 };
+
+export default Physics;
