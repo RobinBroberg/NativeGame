@@ -1,5 +1,4 @@
-import React from "react";
-import { View } from "react-native";
+import { View, Image } from "react-native";
 
 export default function Platform({ body, size, cameraY }) {
   const width = size[0];
@@ -10,16 +9,16 @@ export default function Platform({ body, size, cameraY }) {
   const y = body.position.y - height / 2 + yOffset;
 
   return (
-    <View
+    <Image
+      source={require("../../assets/bricks-1.webp")}
       style={{
         position: "absolute",
         left: x,
         top: y,
         width,
         height,
-        backgroundColor: "brown",
-        borderRadius: 5,
         transform: [{ rotate: `${body.angle}rad` }],
+        resizeMode: "repeat",
       }}
     />
   );
