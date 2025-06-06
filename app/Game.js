@@ -1,5 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  Dimensions,
+} from "react-native";
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
@@ -7,6 +12,8 @@ import Ball from "../components/Ball";
 import Platform from "../components/Platform";
 import createLevel from "../helpers/createLevel";
 import { Physics, getTiltRef } from "../systems/Physics";
+
+const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
 export default function Game() {
   const [scrollY, setScrollY] = useState(0);
@@ -17,9 +24,11 @@ export default function Game() {
     Matter.Engine.create({ enableSleeping: false })
   ).current;
   const world = engine.world;
-  const { ball, platforms } = createLevel();
+  const { ball, platforms } = useRef(createLevel()).current;
 
   const tiltRef = getTiltRef();
+  const jumpCount = useRef(0);
+  const maxJumps = 2;
 
   useEffect(() => {
     Matter.World.add(world, [ball, ...platforms]);
@@ -41,6 +50,7 @@ export default function Game() {
       event.pairs.forEach(({ bodyA, bodyB }) => {
         if (bodyA === ball || bodyB === ball) {
           isBallTouching.current = true;
+          jumpCount.current = 0; // reset on contact
         }
       });
     });
@@ -65,7 +75,6 @@ export default function Game() {
       isBallTouching,
     },
     ball: { body: ball, radius: 20, renderer: Ball },
-    // ground: { body: ground, size: [WIDTH, 40], renderer: Platform },
   };
 
   platforms.forEach((platform, i) => {
@@ -76,21 +85,34 @@ export default function Game() {
     };
   });
 
+  const handleJump = useCallback(() => {
+    if (jumpCount.current < maxJumps) {
+      Matter.Body.setVelocity(ball, {
+        x: ball.velocity.x,
+        y: -10,
+      });
+      jumpCount.current += 1;
+    }
+  }, [ball]);
+
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          flex: 1,
-          transform: [{ translateY: scrollY }, { translateX: scrollX }],
-        }}
-      >
-        <GameEngine
-          systems={[Physics]}
-          entities={entities}
-          style={{ flex: 1, position: "relative" }}
-        />
+    <TouchableWithoutFeedback onPress={handleJump}>
+      <View style={StyleSheet.absoluteFill}>
+        <View
+          style={{
+            height: HEIGHT * 5, // large enough to scroll through
+            width: WIDTH,
+            transform: [{ translateY: scrollY }, { translateX: scrollX }],
+          }}
+        >
+          <GameEngine
+            systems={[Physics]}
+            entities={entities}
+            style={{ flex: 1, position: "relative" }}
+          />
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
