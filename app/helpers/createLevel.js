@@ -4,6 +4,13 @@ import { Dimensions } from "react-native";
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
 export default function createLevel() {
+  const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1560, 90, 10, {
+    isStatic: true,
+    isSensor: false,
+    label: "goal-bar",
+    render: { visible: false },
+  });
+
   const goalPlatform = Matter.Bodies.rectangle(
     WIDTH / 2,
     HEIGHT - 1500,
@@ -118,7 +125,7 @@ export default function createLevel() {
   // Position ball slightly above the lowest platform
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 30, // adjust distance above platform
+    lowestPlatform.position.y - 4000, // adjust distance above platform
     20,
     {
       friction: 0.05,
@@ -130,5 +137,9 @@ export default function createLevel() {
     }
   );
 
-  return { ball, platforms: [...platforms, goalPlatform], goalPlatform };
+  return {
+    ball,
+    platforms: [...platforms, goalPlatform, goalTopBar],
+    goalPlatform,
+  };
 }

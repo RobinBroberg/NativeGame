@@ -1,5 +1,3 @@
-// components/GoalPlatform.js
-import React from "react";
 import { View, Image } from "react-native";
 
 export default function GoalPlatform({ body, size, cameraY }) {
@@ -11,20 +9,31 @@ export default function GoalPlatform({ body, size, cameraY }) {
   const y = body.position.y - height / 2 + yOffset;
 
   return (
-    <View
+    // <View
+    //   style={{
+    //     position: "absolute",
+    //     left: x,
+    //     top: y,
+    //     width,
+    //     height,
+    //     backgroundColor: "gold", // fallback if no image
+    //     borderRadius: 6,
+    //     borderWidth: 2,
+    //     borderColor: "#ffaa00",
+    //   }}
+    // >
+    <Image
+      source={require("../../assets/soccer-goal.png")}
       style={{
         position: "absolute",
-        left: x,
-        top: y,
-        width,
-        height,
-        backgroundColor: "gold", // fallback if no image
-        borderRadius: 6,
-        borderWidth: 2,
-        borderColor: "#ffaa00",
+        left: x - width, // center image over platform
+        top: y - height * 5, // shift up a bit for better placement
+        width: width * 3, // scale wider
+        height: height * 7, // scale taller
+        resizeMode: "contain",
+        transform: [{ rotate: `${body.angle}rad` }],
       }}
-    >
-      {/* <Image source={require("../assets/goal.png")} style={{ width: "100%", height: "100%" }} /> */}
-    </View>
+    />
+    // </View>
   );
 }

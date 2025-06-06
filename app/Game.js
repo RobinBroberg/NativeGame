@@ -84,20 +84,28 @@ export default function Game() {
       setScrollY,
       isBallTouching,
     },
-    ball: { body: ball, radius: 20, renderer: Ball },
   };
 
   platforms.forEach((platform, i) => {
-    entities[`platform${i}`] = {
-      body: platform,
-      size: [platform.bounds.max.x - platform.bounds.min.x, 20],
-      renderer: Platform,
-    };
+    if (platform.label !== "goal") {
+      entities[`platform${i}`] = {
+        body: platform,
+        size: [platform.bounds.max.x - platform.bounds.min.x, 20],
+        renderer: Platform,
+      };
+    }
   });
+
   entities["goalPlatform"] = {
     body: goalPlatform,
     size: [goalPlatform.bounds.max.x - goalPlatform.bounds.min.x, 15],
     renderer: GoalPlatform,
+  };
+
+  entities["ball"] = {
+    body: ball,
+    radius: 20,
+    renderer: Ball,
   };
 
   const handleJump = useCallback(() => {
