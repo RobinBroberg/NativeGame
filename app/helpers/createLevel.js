@@ -135,15 +135,15 @@ export default function createLevel() {
 
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 30, // adjust distance above platform
+    lowestPlatform.position.y - 30, // adjust starting distance above lowest platform
     20,
     {
       friction: 0.05,
       frictionAir: 0.01,
-      restitution: 0.3,
+      restitution: 0.4,
       mass: 1,
-      inertia: Infinity,
-      inverseInertia: 0,
+      // inertia: Infinity,
+      // inverseInertia: 0,
     }
   );
 

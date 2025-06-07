@@ -24,7 +24,11 @@ export const Physics = (entities, { time }) => {
 
     if (ballY > threshold) {
       entities.physics.setIsGameOver(true);
+
       Matter.Engine.clear(engine);
+      engine.events = {};
+
+      Matter.World.clear(engine.world, false);
     }
   }
 
