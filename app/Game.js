@@ -19,6 +19,7 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import createLevel2 from "./levels/createLevel2";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -85,20 +86,19 @@ export default function Game() {
   }, [level]);
 
   function restartGame() {
-    setLevel(createLevel1()); // optional if you track level separately
+    setLevel(createLevel1());
     setIsGameOver(false);
     setHasFinished(false);
     setIsRunning(false);
     setTimer(0);
     gameOverOpacity.value = 0;
 
-    setEngineKey((prev) => prev + 1); // 🔄 force reset
+    setEngineKey((prev) => prev + 1);
   }
 
   useEffect(() => {
-    const currentBall = level.ball;
-
     const handleCollisionStart = (event) => {
+      const currentBall = level.ball;
       event.pairs.forEach(({ bodyA, bodyB }) => {
         if (bodyA === currentBall || bodyB === currentBall) {
           isBallTouching.current = true;
@@ -111,10 +111,22 @@ export default function Game() {
           setIsRunning(false);
           Vibration.vibrate(1000);
         }
+        if (other.label === "round-wall") {
+          const normal = Matter.Vector.normalise({
+            x: currentBall.position.x - other.position.x,
+            y: currentBall.position.y - other.position.y,
+          });
+
+          Matter.Body.setVelocity(currentBall, {
+            x: normal.x * 19,
+            y: normal.y * 10,
+          });
+        }
       });
     };
 
     const handleCollisionEnd = (event) => {
+      const currentBall = level.ball;
       event.pairs.forEach(({ bodyA, bodyB }) => {
         if (bodyA === currentBall || bodyB === currentBall) {
           isBallTouching.current = false;

@@ -3,6 +3,8 @@ import Platform from "../components/Platform";
 import GoalPlatform from "../components/GoalPlatform";
 import Wall from "../components/Wall";
 import RoundWall from "../components/RoundWall";
+import SpinningPlatform from "../components/SpinningPlatform";
+import Hazard from "../components/Hazard";
 
 export default function createEntitiesFromLevel(
   level,
@@ -40,23 +42,47 @@ export default function createEntitiesFromLevel(
       ],
       renderer: GoalPlatform,
     },
-    movingPlatform: {
+  };
+
+  // Optional moving platform
+  if (level.movingPlatform) {
+    entities.movingPlatform = {
       body: level.movingPlatform,
       size: [200, 20],
       renderer: Platform,
-    },
-    roundWall1: {
+    };
+  }
+
+  // Optional round wall
+  if (level.roundWall) {
+    entities.roundWall1 = {
       body: level.roundWall,
       size: [
         level.roundWall.circleRadius * 2,
         level.roundWall.circleRadius * 2,
       ],
       renderer: RoundWall,
-    },
-  };
+    };
+  }
 
+  // Handle different types of platforms
   level.platforms.forEach((platform, i) => {
-    if (
+    const width = platform.bounds.max.x - platform.bounds.min.x;
+    const height = platform.bounds.max.y - platform.bounds.min.y;
+
+    if (platform.label === "spinning-platform") {
+      entities[`spinningPlatform${i}`] = {
+        body: platform,
+        size: [width, height],
+        renderer: SpinningPlatform,
+      };
+    } else if (platform.label === "hazard") {
+      entities[`hazard${i}`] = {
+        body: platform,
+        size: [width, height],
+        renderer: Hazard,
+      };
+    } else if (
       !["goal", "goal-bar", "goal-post", "round-wall"].includes(platform.label)
     ) {
       entities[`platform${i}`] = {
@@ -67,6 +93,7 @@ export default function createEntitiesFromLevel(
     }
   });
 
+  // Add walls if any
   level.walls.forEach((wall, i) => {
     entities[`wall${i}`] = {
       body: wall,

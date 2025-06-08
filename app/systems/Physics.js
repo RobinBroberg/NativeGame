@@ -21,6 +21,12 @@ export const Physics = (entities, { time }) => {
   const speed = 0.002; // adjust for smoothness
   const baseX = WIDTH / 2;
 
+  Object.entries(entities).forEach(([key, value]) => {
+    if (key.startsWith("spinningPlatform") && value.body) {
+      Matter.Body.setAngle(value.body, value.body.angle + 0.05);
+    }
+  });
+
   const offset = Math.sin(tick * speed) * amplitude;
   Matter.Body.setPosition(movingPlatform, {
     x: baseX + offset,

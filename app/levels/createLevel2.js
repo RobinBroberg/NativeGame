@@ -1,4 +1,3 @@
-// helpers/createLevel2.js
 import Matter from "matter-js";
 import { Dimensions } from "react-native";
 
@@ -25,13 +24,17 @@ export default function createLevel2() {
   ];
 
   // Spinning platform (rotated constantly in Physics)
-  const spinningPlatforms = [
-    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 600, 150, 20, {
+  const spinningPlatform = Matter.Bodies.rectangle(
+    WIDTH / 2,
+    HEIGHT - 600,
+    150,
+    20,
+    {
       isStatic: true,
       friction: 0.6,
       label: "spinning-platform",
-    }),
-  ];
+    }
+  );
 
   // Hazard (like a red block that ends the game)
   const hazards = [
@@ -56,8 +59,8 @@ export default function createLevel2() {
 
   return {
     ball,
-    platforms,
-    spinningPlatforms,
+    platforms: [...platforms, spinningPlatform, ...hazards],
+    spinningPlatform,
     hazards,
     goalPlatform,
     walls: [],
