@@ -1,21 +1,24 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
   TouchableWithoutFeedback,
   Dimensions,
   Text,
+  Vibration,
+  TouchableOpacity,
 } from "react-native";
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
-import Ball from "./components/Ball";
-import Platform from "./components/Platform";
-import createLevel from "./helpers/createLevel";
+import createLevel1 from "./levels/createLevel1";
 import Physics, { getTiltRef } from "./systems/Physics";
-import GoalPlatform from "./components/GoalPlatform";
-import Wall from "./components/Wall";
-import RoundWall from "./components/RoundWall";
+import createEntitiesFromLevel from "./helpers/createEntities";
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -24,31 +27,50 @@ export default function Game() {
   const [isRunning, setIsRunning] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-  const [scrollX, setScrollX] = useState(0);
-  const cameraY = useRef(0);
-  const cameraX = useRef(0);
+  const [engineKey, setEngineKey] = useState(0);
+
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
   ).current;
   const world = engine.world;
-  const {
-    ball,
-    platforms,
-    goalPlatform,
-    walls,
-    lowestPlatformY,
-    movingPlatform,
-    roundWall,
-  } = useRef(createLevel()).current;
+
+  const cameraY = useRef(0);
+  const cameraX = useRef(0);
+  const [scrollY, setScrollY] = useState(0);
+  const [scrollX, setScrollX] = useState(0);
+  const isBallTouching = useRef(false);
+
+  const [level, setLevel] = useState(createLevel1());
+
+  const entities = useMemo(
+    () =>
+      createEntitiesFromLevel(
+        level,
+        engine,
+        world,
+        cameraX,
+        cameraY,
+        setScrollX,
+        setScrollY,
+        isBallTouching,
+        setIsGameOver
+      ),
+    [level, engineKey]
+  );
+
+  const gameOverOpacity = useSharedValue(0);
+  const gameOverAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: gameOverOpacity.value,
+  }));
 
   const tiltRef = getTiltRef();
+
   const jumpCount = useRef(0);
   const lastJumpTime = useRef(0);
   const maxJumps = 2;
 
   useEffect(() => {
-    Matter.World.add(world, [ball, ...platforms]);
+    Matter.World.add(world, [level.ball, ...level.platforms]);
 
     let smoothed = 0;
     Accelerometer.setUpdateInterval(16);
@@ -57,106 +79,67 @@ export default function Game() {
       tiltRef.current = smoothed;
     });
 
-    return () => subscription.remove();
-  }, []);
+    return () => {
+      subscription.remove();
+    };
+  }, [level]);
 
-  const isBallTouching = useRef(false);
+  function restartGame() {
+    setLevel(createLevel1()); // optional if you track level separately
+    setIsGameOver(false);
+    setHasFinished(false);
+    setIsRunning(false);
+    setTimer(0);
+    gameOverOpacity.value = 0;
+
+    setEngineKey((prev) => prev + 1); // 🔄 force reset
+  }
 
   useEffect(() => {
-    Matter.Events.on(engine, "collisionStart", (event) => {
+    const currentBall = level.ball;
+
+    const handleCollisionStart = (event) => {
       event.pairs.forEach(({ bodyA, bodyB }) => {
-        if (bodyA === ball || bodyB === ball) {
+        if (bodyA === currentBall || bodyB === currentBall) {
           isBallTouching.current = true;
-          jumpCount.current = 0; // reset on contact
+          jumpCount.current = 0;
         }
-        const other = bodyA === ball ? bodyB : bodyA;
+
+        const other = bodyA === currentBall ? bodyB : bodyA;
         if (other.label === "goal-bar") {
           setHasFinished(true);
           setIsRunning(false);
+          Vibration.vibrate(1000);
         }
       });
-    });
+    };
 
-    Matter.Events.on(engine, "collisionEnd", (event) => {
+    const handleCollisionEnd = (event) => {
       event.pairs.forEach(({ bodyA, bodyB }) => {
-        if (bodyA === ball || bodyB === ball) {
+        if (bodyA === currentBall || bodyB === currentBall) {
           isBallTouching.current = false;
         }
       });
-    });
-  }, []);
-
-  const entities = {
-    physics: {
-      engine,
-      world,
-      cameraY,
-      cameraX,
-      setScrollX,
-      setScrollY,
-      isBallTouching,
-      setIsGameOver,
-      lowestPlatformY,
-    },
-  };
-
-  platforms.forEach((platform, i) => {
-    if (
-      platform.label !== "goal" &&
-      platform.label !== "goal-bar" &&
-      platform.label !== "goal-post"
-    ) {
-      entities[`platform${i}`] = {
-        body: platform,
-        size: [platform.bounds.max.x - platform.bounds.min.x, 20],
-        renderer: Platform,
-      };
-    }
-  });
-
-  walls.forEach((wall, i) => {
-    entities[`wall${i}`] = {
-      body: wall,
-      size: [
-        wall.bounds.max.x - wall.bounds.min.x,
-        wall.bounds.max.y - wall.bounds.min.y,
-      ],
-      renderer: Wall,
     };
-  });
 
-  entities["goalPlatform"] = {
-    body: goalPlatform,
-    size: [goalPlatform.bounds.max.x - goalPlatform.bounds.min.x, 15],
-    renderer: GoalPlatform,
-  };
+    Matter.Events.on(engine, "collisionStart", handleCollisionStart);
+    Matter.Events.on(engine, "collisionEnd", handleCollisionEnd);
 
-  entities["movingPlatform"] = {
-    body: movingPlatform,
-    size: [200, 20],
-    renderer: Platform,
-  };
-
-  entities["roundWall1"] = {
-    body: roundWall,
-    size: [roundWall.circleRadius * 2, roundWall.circleRadius * 2],
-    renderer: RoundWall,
-  };
-
-  entities["ball"] = {
-    body: ball,
-    radius: 20,
-    renderer: Ball,
-  };
+    return () => {
+      Matter.Events.off(engine, "collisionStart", handleCollisionStart);
+      Matter.Events.off(engine, "collisionEnd", handleCollisionEnd);
+    };
+  }, [level.ball]);
 
   const handleJump = useCallback(() => {
     const now = Date.now();
+    const currentBall = level.ball;
 
     if (now - lastJumpTime.current < 300) return;
 
     if (jumpCount.current < maxJumps) {
-      Matter.Body.setVelocity(ball, {
-        x: ball.velocity.x,
+      Matter.Body.setVelocity(currentBall, {
+        x: currentBall.velocity.x,
         y: -10,
       });
       jumpCount.current += 1;
@@ -166,7 +149,7 @@ export default function Game() {
     if (!isRunning) {
       setIsRunning(true);
     }
-  }, [ball]);
+  }, [level.ball]);
 
   useEffect(() => {
     let interval;
@@ -180,6 +163,13 @@ export default function Game() {
     return () => clearInterval(interval);
   }, [isRunning, hasFinished, isGameOver]);
 
+  useEffect(() => {
+    if (isGameOver && !hasFinished) {
+      gameOverOpacity.value = withTiming(1, { duration: 500 });
+      Vibration.vibrate(500);
+    }
+  }, [isGameOver, hasFinished]);
+
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
       <View style={styles.container}>
@@ -187,11 +177,28 @@ export default function Game() {
           {hasFinished && <Text style={styles.goalText}>FINISH</Text>}
           <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
         </View>
-        {isGameOver && !hasFinished && (
-          <View style={styles.gameOverView}>
-            <Text style={styles.gameOverText}>Game Over</Text>
-          </View>
-        )}
+        <Animated.View
+          pointerEvents={isGameOver && !hasFinished ? "auto" : "none"}
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.6)", // dark overlay
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 99,
+            },
+            gameOverAnimatedStyle,
+          ]}
+        >
+          <Text style={styles.gameOverText}>Game Over</Text>
+          <TouchableOpacity onPress={restartGame} style={styles.restartButton}>
+            <Text style={styles.restartButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        </Animated.View>
 
         <View
           style={{
@@ -200,11 +207,7 @@ export default function Game() {
             transform: [{ translateY: scrollY }, { translateX: scrollX }],
           }}
         >
-          <GameEngine
-            systems={[Physics]}
-            entities={entities}
-            style={{ flex: 1, position: "relative" }}
-          />
+          <GameEngine key={engineKey} systems={[Physics]} entities={entities} />
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -253,5 +256,18 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     color: "red",
+  },
+  restartButton: {
+    marginTop: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    elevation: 3,
+  },
+  restartButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
   },
 });

@@ -3,7 +3,7 @@ import { Dimensions } from "react-native";
 
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
-export default function createLevel() {
+export default function createLevel1() {
   const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1575, 90, 1, {
     isStatic: true,
     isSensor: false,
@@ -149,7 +149,7 @@ export default function createLevel() {
 
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 4000, // adjust starting distance above lowest platform
+    lowestPlatform.position.y - 30, // adjust starting distance above lowest platform
     20,
     {
       friction: 0.05,
