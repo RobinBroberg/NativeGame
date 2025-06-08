@@ -5,6 +5,7 @@ const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
 const tiltRef = { current: 0 };
 export const getTiltRef = () => tiltRef;
+let tick = 0;
 
 export const Physics = (entities, { time }) => {
   const engine = entities.physics.engine;
@@ -13,10 +14,26 @@ export const Physics = (entities, { time }) => {
 
   Matter.Engine.update(engine, Math.min(time.delta, 16.666));
 
-  const tilt = tiltRef.current;
+  tick += time.delta;
 
+  const movingPlatform = entities["movingPlatform"].body;
+  const amplitude = 100; // how far left/right it moves
+  const speed = 0.002; // adjust for smoothness
+  const baseX = WIDTH / 2;
+
+  const offset = Math.sin(tick * speed) * amplitude;
+  Matter.Body.setPosition(movingPlatform, {
+    x: baseX + offset,
+    y: movingPlatform.position.y,
+  });
+
+  const tilt = tiltRef.current;
   const forceMagnitude = tilt * 0.001;
   Matter.Body.applyForce(ball, ball.position, { x: forceMagnitude, y: 0 });
+
+  if (entities.physics.isBallTouching?.current) {
+    Matter.Body.setAngularVelocity(ball, tilt * 0.6);
+  }
 
   if (entities.ball && entities.physics.lowestPlatformY) {
     const ballY = entities.ball.body.position.y;
@@ -24,16 +41,10 @@ export const Physics = (entities, { time }) => {
 
     if (ballY > threshold) {
       entities.physics.setIsGameOver(true);
-
       Matter.Engine.clear(engine);
       engine.events = {};
-
       Matter.World.clear(engine.world, false);
     }
-  }
-
-  if (entities.physics.isBallTouching?.current) {
-    Matter.Body.setAngularVelocity(ball, tilt * 0.6);
   }
 
   const newOffset = HEIGHT * 0.5 - ball.position.y;

@@ -23,12 +23,30 @@ export default function createLevel() {
     }
   );
 
+  const movingPlatform = Matter.Bodies.rectangle(
+    WIDTH / 2,
+    HEIGHT + 1600,
+    200,
+    20,
+    {
+      isStatic: true,
+      friction: 1,
+      label: "moving-platform",
+    }
+  );
+
   const walls = [
     Matter.Bodies.rectangle(WIDTH * 1.6, HEIGHT - 1200, 20, 220, {
       isStatic: true,
       friction: 0.6,
     }),
   ];
+
+  const roundWall = Matter.Bodies.circle(WIDTH - 600, HEIGHT - 750, 40, {
+    isStatic: true,
+    friction: 0.6,
+    label: "round-wall",
+  });
 
   const platforms = [
     Matter.Bodies.rectangle(WIDTH / 2.6, HEIGHT - 1550, 10, 1, {
@@ -53,7 +71,7 @@ export default function createLevel() {
       angle: Math.PI / 6,
       friction: 0.6,
     }),
-    Matter.Bodies.rectangle(WIDTH / 2.5, HEIGHT - 900, 250, 20, {
+    Matter.Bodies.rectangle(WIDTH / 3, HEIGHT - 900, 270, 20, {
       isStatic: true,
       friction: 0.6,
     }),
@@ -108,10 +126,6 @@ export default function createLevel() {
       angle: -Math.PI / 18,
       friction: 0.6,
     }),
-    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 1600, 250, 20, {
-      isStatic: true,
-      friction: 0.6,
-    }),
 
     Matter.Bodies.rectangle(WIDTH / 2 - 100, HEIGHT + 1850, 250, 20, {
       isStatic: true,
@@ -135,23 +149,32 @@ export default function createLevel() {
 
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 30, // adjust starting distance above lowest platform
+    lowestPlatform.position.y - 4000, // adjust starting distance above lowest platform
     20,
     {
       friction: 0.05,
       frictionAir: 0.01,
       restitution: 0.4,
       mass: 1,
-      // inertia: Infinity,
-      // inverseInertia: 0,
+      inertia: Infinity,
+      inverseInertia: 0,
     }
   );
 
   return {
     ball,
-    platforms: [...platforms, ...walls, goalPlatform, goalTopBar],
+    platforms: [
+      ...platforms,
+      ...walls,
+      goalPlatform,
+      goalTopBar,
+      movingPlatform,
+      roundWall,
+    ],
     walls,
     goalPlatform,
     lowestPlatformY: lowestPlatform.position.y,
+    movingPlatform,
+    roundWall,
   };
 }

@@ -15,6 +15,7 @@ import createLevel from "./helpers/createLevel";
 import Physics, { getTiltRef } from "./systems/Physics";
 import GoalPlatform from "./components/GoalPlatform";
 import Wall from "./components/Wall";
+import RoundWall from "./components/RoundWall";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -31,12 +32,19 @@ export default function Game() {
     Matter.Engine.create({ enableSleeping: false })
   ).current;
   const world = engine.world;
-  const { ball, platforms, goalPlatform, walls, lowestPlatformY } = useRef(
-    createLevel()
-  ).current;
+  const {
+    ball,
+    platforms,
+    goalPlatform,
+    walls,
+    lowestPlatformY,
+    movingPlatform,
+    roundWall,
+  } = useRef(createLevel()).current;
 
   const tiltRef = getTiltRef();
   const jumpCount = useRef(0);
+  const lastJumpTime = useRef(0);
   const maxJumps = 2;
 
   useEffect(() => {
@@ -123,6 +131,18 @@ export default function Game() {
     renderer: GoalPlatform,
   };
 
+  entities["movingPlatform"] = {
+    body: movingPlatform,
+    size: [200, 20],
+    renderer: Platform,
+  };
+
+  entities["roundWall1"] = {
+    body: roundWall,
+    size: [roundWall.circleRadius * 2, roundWall.circleRadius * 2],
+    renderer: RoundWall,
+  };
+
   entities["ball"] = {
     body: ball,
     radius: 20,
@@ -130,13 +150,19 @@ export default function Game() {
   };
 
   const handleJump = useCallback(() => {
+    const now = Date.now();
+
+    if (now - lastJumpTime.current < 300) return;
+
     if (jumpCount.current < maxJumps) {
       Matter.Body.setVelocity(ball, {
         x: ball.velocity.x,
         y: -10,
       });
       jumpCount.current += 1;
+      lastJumpTime.current = now;
     }
+
     if (!isRunning) {
       setIsRunning(true);
     }
