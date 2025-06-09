@@ -55,6 +55,12 @@ export default function createLevel1() {
       restitution: 1,
       label: "round-wall",
     }),
+    Matter.Bodies.circle(WIDTH + 100, HEIGHT - 550, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
     Matter.Bodies.circle(WIDTH + 100, HEIGHT + 700, 40, {
       isStatic: true,
       friction: 0.6,

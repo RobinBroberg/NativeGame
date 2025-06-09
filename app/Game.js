@@ -427,10 +427,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     color: "#fff",
-    top: 10,
+    top: 5,
     backgroundColor: "rgba(30, 60, 120, 0.8)",
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 4,
     borderRadius: 10,
   },
   gameOverView: {
