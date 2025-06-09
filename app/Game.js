@@ -15,6 +15,7 @@ import createLevel1 from "./levels/createLevel1";
 import createLevel2 from "./levels/createLevel2";
 import Physics, { getTiltRef } from "./systems/Physics";
 import createEntitiesFromLevel from "./helpers/createEntities";
+import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useSharedValue,
   withTiming,
@@ -184,44 +185,56 @@ export default function Game() {
 
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
-      <View style={styles.container}>
-        <View style={styles.overlay}>
-          {hasFinished && <Text style={styles.goalText}>FINISH</Text>}
-          <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
-        </View>
-        <Animated.View
-          pointerEvents={isGameOver && !hasFinished ? "auto" : "none"}
-          style={[
-            {
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.6)", // dark overlay
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 99,
-            },
-            gameOverAnimatedStyle,
-          ]}
-        >
-          <Text style={styles.gameOverText}>Game Over</Text>
-          <TouchableOpacity onPress={restartGame} style={styles.restartButton}>
-            <Text style={styles.restartButtonText}>Try Again</Text>
-          </TouchableOpacity>
-        </Animated.View>
+      <LinearGradient
+        colors={["#4682b4", "#5ca0d3", "#87cefa", "#aee2ff"]}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.container}>
+          <View style={styles.overlay}>
+            {hasFinished && <Text style={styles.goalText}>FINISH</Text>}
+            <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
+          </View>
+          <Animated.View
+            pointerEvents={isGameOver && !hasFinished ? "auto" : "none"}
+            style={[
+              {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.6)", // dark overlay
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 99,
+              },
+              gameOverAnimatedStyle,
+            ]}
+          >
+            <Text style={styles.gameOverText}>Game Over</Text>
+            <TouchableOpacity
+              onPress={restartGame}
+              style={styles.restartButton}
+            >
+              <Text style={styles.restartButtonText}>Try Again</Text>
+            </TouchableOpacity>
+          </Animated.View>
 
-        <View
-          style={{
-            height: HEIGHT * 5,
-            width: WIDTH,
-            transform: [{ translateY: scrollY }, { translateX: scrollX }],
-          }}
-        >
-          <GameEngine key={engineKey} systems={[Physics]} entities={entities} />
+          <View
+            style={{
+              height: HEIGHT * 5,
+              width: WIDTH,
+              transform: [{ translateY: scrollY }, { translateX: scrollX }],
+            }}
+          >
+            <GameEngine
+              key={engineKey}
+              systems={[Physics]}
+              entities={entities}
+            />
+          </View>
         </View>
-      </View>
+      </LinearGradient>
     </TouchableWithoutFeedback>
   );
 }
@@ -229,7 +242,6 @@ export default function Game() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#aee2ff",
   },
   overlay: {
     position: "absolute",
