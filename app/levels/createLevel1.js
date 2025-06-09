@@ -36,13 +36,19 @@ export default function createLevel1() {
   );
 
   const walls = [
-    Matter.Bodies.rectangle(WIDTH * 1.6, HEIGHT - 1200, 20, 220, {
-      isStatic: true,
-      friction: 0.6,
-    }),
+    // Matter.Bodies.rectangle(WIDTH * 1.6, HEIGHT - 1200, 20, 220, {
+    //   isStatic: true,
+    //   friction: 0.6,
+    // }),
   ];
 
   const roundWalls = [
+    Matter.Bodies.circle(WIDTH * 1.6, HEIGHT - 1250, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
     Matter.Bodies.circle(WIDTH - 600, HEIGHT - 750, 40, {
       isStatic: true,
       friction: 0.6,

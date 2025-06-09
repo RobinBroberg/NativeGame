@@ -16,11 +16,14 @@ import createLevel2 from "./levels/createLevel2";
 import Physics, { getTiltRef } from "./systems/Physics";
 import createEntitiesFromLevel from "./helpers/createEntities";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import Animated, {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { StatusBar } from "expo-status-bar";
+import MenuModal from "./components/MenuModal";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -30,6 +33,7 @@ export default function Game() {
   const [hasFinished, setHasFinished] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
@@ -100,11 +104,16 @@ export default function Game() {
 
   function restartGame() {
     const newLevel = createLevelByNumber(currentLevelNumber);
+
+    Matter.Engine.clear(engine);
+    engine.events = {};
+    Matter.World.clear(world, false);
     setLevel(newLevel);
     setIsGameOver(false);
     setHasFinished(false);
     setIsRunning(false);
     setTimer(0);
+    setMenuVisible(false);
     gameOverOpacity.value = 0;
 
     if (gameEngineRef.current) {
@@ -137,6 +146,7 @@ export default function Game() {
     setHasFinished(false);
     setIsRunning(false);
     setTimer(0);
+    setMenuVisible(false);
 
     if (gameEngineRef.current) {
       const newEntities = createEntitiesFromLevel(
@@ -255,29 +265,30 @@ export default function Game() {
         style={{ flex: 1 }}
       >
         <View style={styles.container}>
+          <StatusBar hidden />
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => setMenuVisible(true)}
+          >
+            <Text style={styles.menuIcon}>
+              <Ionicons name="settings-sharp" size={28} color="white" />
+            </Text>
+          </TouchableOpacity>
           <View style={styles.overlay}>
             <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
             <Text style={styles.levelIndicator}>
               Level {currentLevelNumber}
             </Text>
           </View>
+          <MenuModal
+            menuVisible={menuVisible}
+            setMenuVisible={setMenuVisible}
+            handleRestart={restartGame}
+          />
 
           <Animated.View
             pointerEvents={isGameOver && !hasFinished ? "auto" : "none"}
-            style={[
-              {
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.6)",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 99,
-              },
-              gameOverAnimatedStyle,
-            ]}
+            style={[styles.gameOverOverlay, gameOverAnimatedStyle]}
           >
             <Text style={styles.gameOverText}>Game Over</Text>
             <TouchableOpacity
@@ -289,19 +300,7 @@ export default function Game() {
           </Animated.View>
 
           {hasFinished && (
-            <View
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.6)",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 99,
-              }}
-            >
+            <View style={styles.levelCompleteOverlay}>
               <Text style={styles.levelCompleteText}>
                 Level {currentLevelNumber} Complete!
               </Text>
@@ -310,14 +309,14 @@ export default function Game() {
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   onPress={restartGame}
-                  style={[styles.menuButton, styles.restartButtonStyle]}
+                  style={[styles.menuButton2, styles.restartButtonStyle]}
                 >
                   <Text style={styles.menuButtonText}>Restart Level</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={nextLevel}
-                  style={[styles.menuButton, styles.nextLevelButtonStyle]}
+                  style={[styles.menuButton2, styles.nextLevelButtonStyle]}
                 >
                   <Text style={styles.menuButtonText}>Next Level</Text>
                 </TouchableOpacity>
@@ -349,6 +348,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backButton: {
+    position: "absolute",
+    top: 30,
+    left: 20,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    zIndex: 100,
+  },
+  backButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  gameOverOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 99,
+  },
+  menuButton2: {
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    minWidth: 120,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   overlay: {
     position: "absolute",
     top: 30,
@@ -356,6 +388,17 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: "center",
     zIndex: 10,
+  },
+  levelCompleteOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 99,
   },
   goalText: {
     fontSize: 32,
@@ -366,8 +409,9 @@ const styles = StyleSheet.create({
   timer: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#333",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    color: "#fff",
+    top: 10,
+    backgroundColor: "rgba(0,0,0,0.5)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,
@@ -402,7 +446,7 @@ const styles = StyleSheet.create({
   },
   levelIndicator: {
     position: "absolute",
-    top: 0,
+    top: 5,
     right: 20,
     fontSize: 18,
     fontWeight: "bold",
@@ -439,12 +483,15 @@ const styles = StyleSheet.create({
   },
 
   menuButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    borderRadius: 25,
-    minWidth: 120,
-    alignItems: "center",
-    justifyContent: "center",
+    position: "absolute",
+    top: 30,
+    left: 30,
+    zIndex: 100,
+  },
+
+  menuIcon: {
+    fontSize: 26,
+    color: "#fff",
   },
 
   restartButtonStyle: {

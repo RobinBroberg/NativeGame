@@ -6,7 +6,7 @@ export default function Home() {
   const router = useRouter();
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Welcome to the Tilt Game!</Text>
+      <Text>Welcome to GyroBounce</Text>
       <Button title="Start Game" onPress={() => router.push("/Game")} />
     </View>
   );
