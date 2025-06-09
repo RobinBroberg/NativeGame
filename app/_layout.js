@@ -4,7 +4,7 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false, // <- hides the header
+        headerShown: false,
       }}
     >
       <Stack.Screen name="index" options={{ title: "Welcome" }} />
