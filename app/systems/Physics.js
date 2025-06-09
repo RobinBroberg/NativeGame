@@ -16,10 +16,10 @@ export const Physics = (entities, { time }) => {
 
   tick += time.delta;
 
-  const movingPlatform = entities["movingPlatform"].body;
-  const amplitude = 100; // how far left/right it moves
-  const speed = 0.002; // adjust for smoothness
+  const amplitude = 100;
+  const speed = 0.002;
   const baseX = WIDTH / 2;
+  const movingPlatform = entities["movingPlatform"]?.body;
 
   Object.entries(entities).forEach(([key, value]) => {
     if (key.startsWith("spinningPlatform") && value.body) {
@@ -27,11 +27,13 @@ export const Physics = (entities, { time }) => {
     }
   });
 
-  const offset = Math.sin(tick * speed) * amplitude;
-  Matter.Body.setPosition(movingPlatform, {
-    x: baseX + offset,
-    y: movingPlatform.position.y,
-  });
+  if (movingPlatform) {
+    const offset = Math.sin(tick * speed) * amplitude;
+    Matter.Body.setPosition(movingPlatform, {
+      x: baseX + offset,
+      y: movingPlatform.position.y,
+    });
+  }
 
   const tilt = tiltRef.current;
   const forceMagnitude = tilt * 0.001;
@@ -43,7 +45,7 @@ export const Physics = (entities, { time }) => {
 
   if (entities.ball && entities.physics.lowestPlatformY) {
     const ballY = entities.ball.body.position.y;
-    const threshold = entities.physics.lowestPlatformY + 200;
+    const threshold = entities.physics.lowestPlatformY + 400;
 
     if (ballY > threshold) {
       entities.physics.setIsGameOver(true);

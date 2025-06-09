@@ -53,16 +53,14 @@ export default function createEntitiesFromLevel(
     };
   }
 
-  // Optional round wall
-  if (level.roundWall) {
-    entities.roundWall1 = {
-      body: level.roundWall,
-      size: [
-        level.roundWall.circleRadius * 2,
-        level.roundWall.circleRadius * 2,
-      ],
-      renderer: RoundWall,
-    };
+  if (level.roundWalls) {
+    level.roundWalls.forEach((wall, i) => {
+      entities[`roundWall${i}`] = {
+        body: wall,
+        size: [wall.circleRadius * 2, wall.circleRadius * 2],
+        renderer: RoundWall,
+      };
+    });
   }
 
   // Handle different types of platforms
@@ -73,7 +71,7 @@ export default function createEntitiesFromLevel(
     if (platform.label === "spinning-platform") {
       entities[`spinningPlatform${i}`] = {
         body: platform,
-        size: [width, height],
+        size: [platform.bounds.max.x - platform.bounds.min.x, 20],
         renderer: SpinningPlatform,
       };
     } else if (platform.label === "hazard") {

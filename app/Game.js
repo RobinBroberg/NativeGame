@@ -12,6 +12,7 @@ import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
 import createLevel1 from "./levels/createLevel1";
+import createLevel2 from "./levels/createLevel2";
 import Physics, { getTiltRef } from "./systems/Physics";
 import createEntitiesFromLevel from "./helpers/createEntities";
 import Animated, {
@@ -19,7 +20,6 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
-import createLevel2 from "./levels/createLevel2";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -118,8 +118,8 @@ export default function Game() {
           });
 
           Matter.Body.setVelocity(currentBall, {
-            x: normal.x * 19,
-            y: normal.y * 10,
+            x: normal.x * 7,
+            y: normal.y * 15,
           });
         }
       });

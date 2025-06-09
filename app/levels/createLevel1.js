@@ -42,12 +42,40 @@ export default function createLevel1() {
     }),
   ];
 
-  const roundWall = Matter.Bodies.circle(WIDTH - 600, HEIGHT - 750, 40, {
-    isStatic: true,
-    friction: 0.6,
-    restitution: 1,
-    label: "round-wall",
-  });
+  const roundWalls = [
+    Matter.Bodies.circle(WIDTH - 600, HEIGHT - 750, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
+    Matter.Bodies.circle(WIDTH + 100, HEIGHT + 700, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
+    Matter.Bodies.circle(WIDTH - 600, HEIGHT + 2050, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
+
+    Matter.Bodies.circle(WIDTH - 750, HEIGHT + 1850, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
+
+    Matter.Bodies.circle(WIDTH - 550, HEIGHT + 1600, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
+  ];
 
   const platforms = [
     Matter.Bodies.rectangle(WIDTH / 2.6, HEIGHT - 1550, 10, 1, {
@@ -150,7 +178,7 @@ export default function createLevel1() {
 
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 4000, // adjust starting distance above lowest platform
+    lowestPlatform.position.y - 30, // adjust starting distance above lowest platform
     20,
     {
       friction: 0.05,
@@ -170,12 +198,12 @@ export default function createLevel1() {
       goalPlatform,
       goalTopBar,
       movingPlatform,
-      roundWall,
+      ...roundWalls,
     ],
     walls,
     goalPlatform,
     lowestPlatformY: lowestPlatform.position.y,
     movingPlatform,
-    roundWall,
+    roundWalls,
   };
 }
