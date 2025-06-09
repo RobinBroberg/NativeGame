@@ -34,6 +34,7 @@ export default function Game() {
   const [isGameOver, setIsGameOver] = useState(false);
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
@@ -60,7 +61,8 @@ export default function Game() {
         setScrollX,
         setScrollY,
         isBallTouching,
-        setIsGameOver
+        setIsGameOver,
+        isPaused
       ),
     [level]
   );
@@ -126,7 +128,8 @@ export default function Game() {
         setScrollX,
         setScrollY,
         isBallTouching,
-        setIsGameOver
+        setIsGameOver,
+        isPaused
       );
       gameEngineRef.current.swap(newEntities);
     }
@@ -158,7 +161,8 @@ export default function Game() {
         setScrollX,
         setScrollY,
         isBallTouching,
-        setIsGameOver
+        setIsGameOver,
+        isPaused
       );
       gameEngineRef.current.swap(newEntities);
     }
@@ -242,14 +246,14 @@ export default function Game() {
   useEffect(() => {
     let interval;
 
-    if (isRunning && !hasFinished && !isGameOver) {
+    if (isRunning && !hasFinished && !isGameOver && !isPaused) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 0.1);
       }, 100);
     }
 
     return () => clearInterval(interval);
-  }, [isRunning, hasFinished, isGameOver]);
+  }, [isRunning, hasFinished, isGameOver, isPaused]);
 
   useEffect(() => {
     if (isGameOver && !hasFinished) {
@@ -268,12 +272,18 @@ export default function Game() {
           <StatusBar hidden />
           <TouchableOpacity
             style={styles.menuButton}
-            onPress={() => setMenuVisible(true)}
+            onPress={() => {
+              setMenuVisible(true);
+              setIsPaused(true);
+              if (gameEngineRef.current?.state?.entities?.physics) {
+                gameEngineRef.current.state.entities.physics.isPaused = true;
+              }
+            }}
+            hitSlop={{ top: 50, bottom: 50, left: 50, right: 50 }}
           >
-            <Text style={styles.menuIcon}>
-              <Ionicons name="settings-sharp" size={28} color="white" />
-            </Text>
+            <Ionicons name="settings-sharp" size={28} style={styles.menuIcon} />
           </TouchableOpacity>
+
           <View style={styles.overlay}>
             <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
             <Text style={styles.levelIndicator}>
@@ -284,6 +294,13 @@ export default function Game() {
             menuVisible={menuVisible}
             setMenuVisible={setMenuVisible}
             handleRestart={restartGame}
+            resumeGame={() => {
+              setMenuVisible(false);
+              setIsPaused(false);
+              if (gameEngineRef.current?.state?.entities?.physics) {
+                gameEngineRef.current.state.entities.physics.isPaused = false;
+              }
+            }}
           />
 
           <Animated.View
@@ -411,7 +428,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
     top: 10,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(30, 60, 120, 0.8)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,
@@ -487,11 +504,15 @@ const styles = StyleSheet.create({
     top: 30,
     left: 30,
     zIndex: 100,
+    borderRadius: 20,
   },
 
   menuIcon: {
-    fontSize: 26,
+    fontSize: 30,
     color: "#fff",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 
   restartButtonStyle: {

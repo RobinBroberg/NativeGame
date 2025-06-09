@@ -6,6 +6,7 @@ export default function MenuModal({
   menuVisible,
   setMenuVisible,
   handleRestart,
+  resumeGame,
 }) {
   const router = useRouter();
 
@@ -15,10 +16,7 @@ export default function MenuModal({
         <View style={styles.menuContainer}>
           <Text style={styles.menuTitle}>Game Menu</Text>
 
-          <TouchableOpacity
-            style={styles.menuButton}
-            onPress={() => setMenuVisible(false)}
-          >
+          <TouchableOpacity style={styles.menuButton} onPress={resumeGame}>
             <Ionicons name="play-circle-outline" size={24} color="#4ecdc4" />
             <Text style={styles.menuButtonText}>Resume Game</Text>
           </TouchableOpacity>

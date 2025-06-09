@@ -8,6 +8,7 @@ export const getTiltRef = () => tiltRef;
 let tick = 0;
 
 export const Physics = (entities, { time }) => {
+  if (entities.physics.isPaused) return entities;
   const engine = entities.physics.engine;
   const ball = entities.ball.body;
   const { cameraY, setScrollY, cameraX, setScrollX } = entities.physics;
