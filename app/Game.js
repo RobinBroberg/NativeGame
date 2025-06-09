@@ -29,12 +29,13 @@ export default function Game() {
   const [isRunning, setIsRunning] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [engineKey, setEngineKey] = useState(0);
+  const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
 
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
   ).current;
   const world = engine.world;
+  const gameEngineRef = useRef(null);
 
   const cameraY = useRef(0);
   const cameraX = useRef(0);
@@ -57,7 +58,7 @@ export default function Game() {
         isBallTouching,
         setIsGameOver
       ),
-    [level, engineKey]
+    [level]
   );
 
   const gameOverOpacity = useSharedValue(0);
@@ -70,6 +71,17 @@ export default function Game() {
   const jumpCount = useRef(0);
   const lastJumpTime = useRef(0);
   const maxJumps = 2;
+
+  const createLevelByNumber = (levelNum) => {
+    switch (levelNum) {
+      case 1:
+        return createLevel1();
+      case 2:
+        return createLevel2();
+      default:
+        return createLevel1();
+    }
+  };
 
   useEffect(() => {
     Matter.World.add(world, [level.ball, ...level.platforms]);
@@ -87,15 +99,68 @@ export default function Game() {
   }, [level]);
 
   function restartGame() {
-    setLevel(createLevel1());
+    const newLevel = createLevelByNumber(currentLevelNumber);
+    setLevel(newLevel);
     setIsGameOver(false);
     setHasFinished(false);
     setIsRunning(false);
     setTimer(0);
     gameOverOpacity.value = 0;
 
-    setEngineKey((prev) => prev + 1);
+    if (gameEngineRef.current) {
+      const newEntities = createEntitiesFromLevel(
+        newLevel,
+        engine,
+        world,
+        cameraX,
+        cameraY,
+        setScrollX,
+        setScrollY,
+        isBallTouching,
+        setIsGameOver
+      );
+      gameEngineRef.current.swap(newEntities);
+    }
   }
+
+  function nextLevel() {
+    const nextLevelNum = currentLevelNumber + 1;
+    const newLevel = createLevelByNumber(nextLevelNum);
+
+    Matter.Engine.clear(engine);
+    engine.events = {};
+    Matter.World.clear(world, false);
+
+    setCurrentLevelNumber(nextLevelNum);
+    setLevel(newLevel);
+    setIsGameOver(false);
+    setHasFinished(false);
+    setIsRunning(false);
+    setTimer(0);
+
+    if (gameEngineRef.current) {
+      const newEntities = createEntitiesFromLevel(
+        newLevel,
+        engine,
+        world,
+        cameraX,
+        cameraY,
+        setScrollX,
+        setScrollY,
+        isBallTouching,
+        setIsGameOver
+      );
+      gameEngineRef.current.swap(newEntities);
+    }
+  }
+
+  const handleGameEvent = (event) => {
+    if (event.type === "next-level") {
+      nextLevel();
+    } else if (event.type === "restart-level") {
+      restartGame();
+    }
+  };
 
   useEffect(() => {
     const handleCollisionStart = (event) => {
@@ -191,9 +256,12 @@ export default function Game() {
       >
         <View style={styles.container}>
           <View style={styles.overlay}>
-            {hasFinished && <Text style={styles.goalText}>FINISH</Text>}
             <Text style={styles.timer}>{timer.toFixed(1)}s</Text>
+            <Text style={styles.levelIndicator}>
+              Level {currentLevelNumber}
+            </Text>
           </View>
+
           <Animated.View
             pointerEvents={isGameOver && !hasFinished ? "auto" : "none"}
             style={[
@@ -203,7 +271,7 @@ export default function Game() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.6)", // dark overlay
+                backgroundColor: "rgba(0,0,0,0.6)",
                 justifyContent: "center",
                 alignItems: "center",
                 zIndex: 99,
@@ -220,6 +288,43 @@ export default function Game() {
             </TouchableOpacity>
           </Animated.View>
 
+          {hasFinished && (
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.6)",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 99,
+              }}
+            >
+              <Text style={styles.levelCompleteText}>
+                Level {currentLevelNumber} Complete!
+              </Text>
+              <Text style={styles.timeText}>Time: {timer.toFixed(1)}s</Text>
+
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  onPress={restartGame}
+                  style={[styles.menuButton, styles.restartButtonStyle]}
+                >
+                  <Text style={styles.menuButtonText}>Restart Level</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={nextLevel}
+                  style={[styles.menuButton, styles.nextLevelButtonStyle]}
+                >
+                  <Text style={styles.menuButtonText}>Next Level</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
           <View
             style={{
               height: HEIGHT * 5,
@@ -228,9 +333,10 @@ export default function Game() {
             }}
           >
             <GameEngine
-              key={engineKey}
+              ref={gameEngineRef}
               systems={[Physics]}
               entities={entities}
+              onEvent={handleGameEvent}
             />
           </View>
         </View>
@@ -293,5 +399,72 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
+  },
+  levelIndicator: {
+    position: "absolute",
+    top: 0,
+    right: 20,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+
+  levelCompleteText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    marginBottom: 10,
+    textShadowColor: "rgba(0, 0, 0, 0.8)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+
+  timeText: {
+    fontSize: 24,
+    color: "white",
+    textAlign: "center",
+    marginBottom: 30,
+    textShadowColor: "rgba(0, 0, 0, 0.8)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 20,
+  },
+
+  menuButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    minWidth: 120,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  restartButtonStyle: {
+    backgroundColor: "#ff6b6b",
+    borderWidth: 2,
+    borderColor: "#ff5252",
+  },
+
+  nextLevelButtonStyle: {
+    backgroundColor: "#4ecdc4",
+    borderWidth: 2,
+    borderColor: "#26a69a",
+  },
+
+  menuButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
   },
 });
