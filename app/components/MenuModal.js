@@ -1,6 +1,6 @@
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Modal, View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import GameButton from "./GameButton";
 
 export default function MenuModal({ menuVisible, handleRestart, resumeGame }) {
   const router = useRouter();
@@ -11,25 +11,26 @@ export default function MenuModal({ menuVisible, handleRestart, resumeGame }) {
         <View style={styles.menuContainer}>
           <Text style={styles.menuTitle}>Game Menu</Text>
 
-          <TouchableOpacity style={styles.menuButton} onPress={resumeGame}>
-            <Ionicons name="play-circle-outline" size={24} color="#4ecdc4" />
-            <Text style={styles.menuButtonText}>Resume Game</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuButton} onPress={handleRestart}>
-            <Ionicons name="refresh-outline" size={24} color="#4ecdc4" />
-            <Text style={styles.menuButtonText}>Restart Level</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.menuButton, styles.exitButton]}
+          <GameButton
+            title="Resume Game"
+            icon="play-circle-outline"
+            onPress={resumeGame}
+            width={250}
+          />
+          <GameButton
+            title="Restart Level"
+            icon="refresh-outline"
+            onPress={handleRestart}
+            width={250}
+          />
+          <GameButton
+            title="Main Menu"
+            icon="arrow-back"
             onPress={() => router.replace("/")}
-          >
-            <Ionicons name="home-outline" size={24} color="#ff6b6b" />
-            <Text style={[styles.menuButtonText, styles.exitText]}>
-              Main Menu
-            </Text>
-          </TouchableOpacity>
+            color="#ff6b6b"
+            borderColor="#ff6b6b"
+            width={250}
+          />
         </View>
       </View>
     </Modal>
@@ -56,34 +57,13 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   menuTitle: {
-    fontSize: 28,
-    color: "#ffffff",
-    fontWeight: "bold",
+    fontSize: 32,
+    fontWeight: "800",
+    color: "#ffc107",
     marginBottom: 30,
-  },
-  menuButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#333",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginVertical: 10,
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#4ecdc4",
-  },
-  exitButton: {
-    backgroundColor: "#3a1f1f",
-    borderColor: "#ff6b6b",
-  },
-  menuButtonText: {
-    fontSize: 18,
-    color: "#ffffff",
-    fontWeight: "600",
-    marginLeft: 12,
-  },
-  exitText: {
-    color: "#ff6b6b",
+    textShadowColor: "#ff9800",
+    textShadowRadius: 4,
+    textAlign: "center",
+    letterSpacing: 1,
   },
 });

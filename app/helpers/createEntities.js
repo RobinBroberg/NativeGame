@@ -1,10 +1,10 @@
-import Ball from "../components/Ball";
-import Platform from "../components/Platform";
-import GoalPlatform from "../components/GoalPlatform";
-import Wall from "../components/Wall";
-import RoundWall from "../components/RoundWall";
-import SpinningPlatform from "../components/SpinningPlatform";
-import Hazard from "../components/Hazard";
+import Ball from "../components/objects/Ball";
+import Platform from "../components/objects/Platform";
+import GoalPlatform from "../components/objects/GoalPlatform";
+import Wall from "../components/objects/Wall";
+import RoundWall from "../components/objects/RoundWall";
+import SpinningPlatform from "../components/objects/SpinningPlatform";
+import Hazard from "../components/objects/Hazard";
 
 export default function createEntitiesFromLevel(
   level,

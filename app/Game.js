@@ -25,6 +25,7 @@ import Animated, {
 import { StatusBar } from "expo-status-bar";
 import MenuModal from "./components/MenuModal";
 import loadLevel from "./helpers/loadLevel";
+import GameButton from "./components/GameButton";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -313,19 +314,19 @@ export default function Game() {
               <Text style={styles.timeText}>Time: {timer.toFixed(1)}s</Text>
 
               <View style={styles.buttonContainer}>
-                <TouchableOpacity
+                <GameButton
+                  title="Restart level"
                   onPress={restartGame}
-                  style={[styles.menuButton2, styles.restartButtonStyle]}
-                >
-                  <Text style={styles.menuButtonText}>Restart Level</Text>
-                </TouchableOpacity>
+                  color="#ff6b6b"
+                  borderColor="#ff5252"
+                  justifyContent="center"
+                />
 
-                <TouchableOpacity
+                <GameButton
+                  title="Next Level"
                   onPress={nextLevel}
-                  style={[styles.menuButton2, styles.nextLevelButtonStyle]}
-                >
-                  <Text style={styles.menuButtonText}>Next Level</Text>
-                </TouchableOpacity>
+                  justifyContent="center"
+                />
               </View>
             </View>
           )}
@@ -354,20 +355,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  backButton: {
-    position: "absolute",
-    top: 30,
-    left: 20,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    zIndex: 100,
-  },
-  backButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
   gameOverOverlay: {
     position: "absolute",
     top: 0,
@@ -378,14 +365,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     zIndex: 99,
-  },
-  menuButton2: {
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    borderRadius: 25,
-    minWidth: 120,
-    alignItems: "center",
-    justifyContent: "center",
   },
   overlay: {
     position: "absolute",
@@ -437,19 +416,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "red",
   },
-  restartButton: {
-    marginTop: 20,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: "#ffffff",
-    borderRadius: 10,
-    elevation: 3,
-  },
-  restartButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
   levelIndicator: {
     position: "absolute",
     top: 5,
@@ -484,7 +450,7 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
     gap: 20,
   },
 
@@ -502,26 +468,5 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-  },
-
-  restartButtonStyle: {
-    backgroundColor: "#ff6b6b",
-    borderWidth: 2,
-    borderColor: "#ff5252",
-  },
-
-  nextLevelButtonStyle: {
-    backgroundColor: "#4ecdc4",
-    borderWidth: 2,
-    borderColor: "#26a69a",
-  },
-
-  menuButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "white",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
   },
 });
