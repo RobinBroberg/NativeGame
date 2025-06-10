@@ -2,12 +2,7 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function MenuModal({
-  menuVisible,
-  setMenuVisible,
-  handleRestart,
-  resumeGame,
-}) {
+export default function MenuModal({ menuVisible, handleRestart, resumeGame }) {
   const router = useRouter();
 
   return (

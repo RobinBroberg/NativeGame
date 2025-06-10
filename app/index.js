@@ -8,7 +8,7 @@ export default function Home() {
 
   return (
     <LinearGradient
-      colors={["#4682b4", "#5ca0d3", "#87cefa", "#aee2ff"]}
+      colors={["#1d3557", "#457b9d", "#5ca0d3", "#5ca0d3", "#aee2ff"]}
       style={styles.container}
     >
       <Image source={require("../assets/tiltball3.png")} style={styles.logo} />
