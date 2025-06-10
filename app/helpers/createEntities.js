@@ -44,15 +44,6 @@ export default function createEntitiesFromLevel(
     },
   };
 
-  // Optional moving platform
-  if (level.movingPlatform) {
-    entities.movingPlatform = {
-      body: level.movingPlatform,
-      size: [200, 20],
-      renderer: Platform,
-    };
-  }
-
   if (level.roundWalls) {
     level.roundWalls.forEach((wall, i) => {
       entities[`roundWall${i}`] = {
@@ -73,6 +64,12 @@ export default function createEntitiesFromLevel(
         body: platform,
         size: [platform.bounds.max.x - platform.bounds.min.x, 20],
         renderer: SpinningPlatform,
+      };
+    } else if (platform.label === "moving-platform") {
+      entities[`movingPlatform${i}`] = {
+        body: platform,
+        size: [width, height],
+        renderer: Platform,
       };
     } else if (platform.label === "hazard") {
       entities[`hazard${i}`] = {

@@ -7,7 +7,7 @@ const tiltRef = { current: 0 };
 export const getTiltRef = () => tiltRef;
 let tick = 0;
 
-export const Physics = (entities, { time }) => {
+export function Physics(entities, { time }) {
   if (entities.physics.isPaused) return entities;
   const engine = entities.physics.engine;
   const ball = entities.ball.body;
@@ -20,7 +20,6 @@ export const Physics = (entities, { time }) => {
   const amplitude = 100;
   const speed = 0.002;
   const baseX = WIDTH / 2;
-  const movingPlatform = entities["movingPlatform"]?.body;
 
   Object.entries(entities).forEach(([key, value]) => {
     if (key.startsWith("spinningPlatform") && value.body) {
@@ -28,13 +27,15 @@ export const Physics = (entities, { time }) => {
     }
   });
 
-  if (movingPlatform) {
-    const offset = Math.sin(tick * speed) * amplitude;
-    Matter.Body.setPosition(movingPlatform, {
-      x: baseX + offset,
-      y: movingPlatform.position.y,
-    });
-  }
+  Object.entries(entities).forEach(([key, value]) => {
+    if (key.startsWith("movingPlatform") && value.body) {
+      const offset = Math.sin(tick * speed) * amplitude;
+      Matter.Body.setPosition(value.body, {
+        x: baseX + offset,
+        y: value.body.position.y,
+      });
+    }
+  });
 
   const tilt = tiltRef.current;
   const forceMagnitude = tilt * 0.001;
@@ -65,6 +66,6 @@ export const Physics = (entities, { time }) => {
   setScrollX(offsetX);
 
   return entities;
-};
+}
 
 export default Physics;

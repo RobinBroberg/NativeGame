@@ -6,7 +6,9 @@ export default function GameButton({
   onPress,
   icon,
   width,
-  color = "#ffc107", // darker default
+  fontWeight = "bold",
+  fontSize = 20,
+  color = "#ffc107",
   textColor = "#4b2e00",
   borderColor = "#ff9800",
   justifyContent = "flex-start",
@@ -29,7 +31,14 @@ export default function GameButton({
       {icon && (
         <Ionicons name={icon} size={24} color={textColor} style={styles.icon} />
       )}
-      <Text style={[styles.text, { color: textColor }]}>{title}</Text>
+      <Text
+        style={[
+          styles.text,
+          { color: textColor, fontSize: fontSize, fontWeight: fontWeight },
+        ]}
+      >
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }

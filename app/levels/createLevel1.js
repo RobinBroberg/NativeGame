@@ -23,17 +23,13 @@ export default function createLevel1() {
     }
   );
 
-  const movingPlatform = Matter.Bodies.rectangle(
-    WIDTH / 2,
-    HEIGHT + 1600,
-    200,
-    20,
-    {
+  const movingPlatforms = [
+    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT + 1600, 200, 20, {
       isStatic: true,
       friction: 1,
       label: "moving-platform",
-    }
-  );
+    }),
+  ];
 
   const walls = [
     // Matter.Bodies.rectangle(WIDTH * 1.6, HEIGHT - 1200, 20, 220, {
@@ -73,6 +69,12 @@ export default function createLevel1() {
       restitution: 1,
       label: "round-wall",
     }),
+    Matter.Bodies.circle(WIDTH - 800, HEIGHT + 2250, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
     Matter.Bodies.circle(WIDTH - 600, HEIGHT + 2050, 40, {
       isStatic: true,
       friction: 0.6,
@@ -86,8 +88,13 @@ export default function createLevel1() {
       restitution: 1,
       label: "round-wall",
     }),
-
     Matter.Bodies.circle(WIDTH - 550, HEIGHT + 1600, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
+    Matter.Bodies.circle(WIDTH - 800, HEIGHT + 1350, 40, {
       isStatic: true,
       friction: 0.6,
       restitution: 1,
@@ -233,14 +240,13 @@ export default function createLevel1() {
       ...walls,
       goalPlatform,
       goalTopBar,
-      movingPlatform,
+      ...movingPlatforms,
       ...spinningPlatforms,
       ...roundWalls,
     ],
     walls,
     goalPlatform,
     lowestPlatformY: lowestPlatform.position.y,
-    movingPlatform,
     roundWalls,
   };
 }

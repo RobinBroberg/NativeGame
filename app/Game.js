@@ -26,6 +26,7 @@ import { StatusBar } from "expo-status-bar";
 import MenuModal from "./components/MenuModal";
 import loadLevel from "./helpers/loadLevel";
 import GameButton from "./components/GameButton";
+import { router } from "expo-router";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -100,16 +101,19 @@ export default function Game() {
   const lastJumpTime = useRef(0);
   const maxJumps = 2;
 
-  const createLevelByNumber = (levelNum) => {
+  function createLevelByNumber(levelNum) {
     switch (levelNum) {
       case 1:
         return createLevel1();
       case 2:
         return createLevel2();
       default:
-        return createLevel1();
+        return null;
     }
-  };
+  }
+
+  const nextLevelNum = currentLevelNumber + 1;
+  const nextLevelExists = createLevelByNumber(nextLevelNum) !== null;
 
   useEffect(() => {
     Matter.World.add(world, [level.ball, ...level.platforms]);
@@ -142,23 +146,27 @@ export default function Game() {
     setIsPaused(false);
     const nextLevelNum = currentLevelNumber + 1;
     const newLevel = createLevelByNumber(nextLevelNum);
+    if (!newLevel) {
+      return;
+    }
     loadLevel({
       ...gameState,
       level: newLevel,
       levelNumber: nextLevelNum,
     });
+    setCurrentLevelNumber(nextLevelNum);
   }
 
-  const handleGameEvent = (event) => {
+  function handleGameEvent(event) {
     if (event.type === "next-level") {
       nextLevel();
     } else if (event.type === "restart-level") {
       restartGame();
     }
-  };
+  }
 
   useEffect(() => {
-    const handleCollisionStart = (event) => {
+    function handleCollisionStart(event) {
       const currentBall = level.ball;
       event.pairs.forEach(({ bodyA, bodyB }) => {
         if (bodyA === currentBall || bodyB === currentBall) {
@@ -191,16 +199,16 @@ export default function Game() {
           });
         }
       });
-    };
+    }
 
-    const handleCollisionEnd = (event) => {
+    function handleCollisionEnd(event) {
       const currentBall = level.ball;
       event.pairs.forEach(({ bodyA, bodyB }) => {
         if (bodyA === currentBall || bodyB === currentBall) {
           isBallTouching.current = false;
         }
       });
-    };
+    }
 
     Matter.Events.on(engine, "collisionStart", handleCollisionStart);
     Matter.Events.on(engine, "collisionEnd", handleCollisionEnd);
@@ -253,7 +261,7 @@ export default function Game() {
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
       <LinearGradient
-        colors={["#4682b6", "#5ca0d3", "#87cefa", "#aee2ff"]}
+        colors={["rgb(70, 130, 182)", "#5ca0d3", "#87cefa", "#aee2ff"]}
         style={{ flex: 1 }}
       >
         <View style={styles.container}>
@@ -298,12 +306,13 @@ export default function Game() {
             style={[styles.gameOverOverlay, gameOverAnimatedStyle]}
           >
             <Text style={styles.gameOverText}>Game Over</Text>
-            <TouchableOpacity
+            <GameButton
+              title="Play Again"
               onPress={restartGame}
-              style={styles.restartButton}
-            >
-              <Text style={styles.restartButtonText}>Try Again</Text>
-            </TouchableOpacity>
+              width={200}
+              justifyContent="center"
+              fontSize="24"
+            />
           </Animated.View>
 
           {hasFinished && (
@@ -312,21 +321,35 @@ export default function Game() {
                 Level {currentLevelNumber} Complete!
               </Text>
               <Text style={styles.timeText}>Time: {timer.toFixed(1)}s</Text>
-
+              {!nextLevelExists && (
+                <Text style={styles.timeText}>All levels completed</Text>
+              )}
               <View style={styles.buttonContainer}>
                 <GameButton
                   title="Restart level"
                   onPress={restartGame}
-                  color="#ff6b6b"
-                  borderColor="#ff5252"
+                  icon="refresh-outline"
+                  color={nextLevelExists ? "#ff6b6b" : undefined}
+                  borderColor={nextLevelExists ? "#ff5252" : undefined}
                   justifyContent="center"
                 />
 
-                <GameButton
-                  title="Next Level"
-                  onPress={nextLevel}
-                  justifyContent="center"
-                />
+                {nextLevelExists ? (
+                  <GameButton
+                    title="Next Level"
+                    onPress={nextLevel}
+                    justifyContent="center"
+                  />
+                ) : (
+                  <GameButton
+                    title="Main Menu"
+                    onPress={() => router.replace("/")}
+                    icon="arrow-back"
+                    color="#ff6b6b"
+                    borderColor="#ff5252"
+                    justifyContent="center"
+                  />
+                )}
               </View>
             </View>
           )}
@@ -395,7 +418,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     color: "#fff",
-    top: 5,
+    top: 7,
     backgroundColor: "rgba(37, 70, 136, 0.8)",
     paddingHorizontal: 12,
     paddingVertical: 4,
@@ -413,8 +436,13 @@ const styles = StyleSheet.create({
   },
   gameOverText: {
     fontSize: 32,
-    fontWeight: "bold",
-    color: "red",
+    fontWeight: "800",
+    color: "#ffc107",
+    marginBottom: 30,
+    textShadowColor: "#ff9800",
+    textShadowRadius: 4,
+    textAlign: "center",
+    letterSpacing: 1,
   },
   levelIndicator: {
     position: "absolute",
