@@ -1,6 +1,11 @@
+import { memo } from "react";
 import { View } from "react-native";
 
-export default function SpinningPlatform({ body, size, cameraY }) {
+const SpinningPlatform = memo(function SpinningPlatform({
+  body,
+  size,
+  cameraY,
+}) {
   const width = size[0];
   const height = size[1];
   const yOffset = cameraY?.current ?? 0;
@@ -12,8 +17,6 @@ export default function SpinningPlatform({ body, size, cameraY }) {
     <View
       style={{
         position: "absolute",
-        left: x,
-        top: y,
         width,
         height,
         backgroundColor: "#b22222",
@@ -21,8 +24,14 @@ export default function SpinningPlatform({ body, size, cameraY }) {
         borderColor: "#ff4d4d",
         borderRadius: 6,
         elevation: 10,
-        transform: [{ rotate: `${body.angle}rad` }],
+        transform: [
+          { translateX: x },
+          { translateY: y },
+          { rotate: `${body.angle}rad` },
+        ],
       }}
     />
   );
-}
+});
+
+export default SpinningPlatform;

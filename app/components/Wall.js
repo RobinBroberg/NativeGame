@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { View } from "react-native";
 
-export default function Wall({ body, size, cameraY }) {
+const Wall = memo(function Wall({ body, size, cameraY }) {
   const width = size[0];
   const height = size[1];
   const yOffset = cameraY?.current ?? 0;
@@ -12,15 +13,19 @@ export default function Wall({ body, size, cameraY }) {
     <View
       style={{
         position: "absolute",
-        left: x,
-        top: y,
         width,
         height,
         backgroundColor: "#8B0000",
         borderWidth: 1,
         borderColor: "#600000",
-        transform: [{ rotate: `${body.angle}rad` }],
+        transform: [
+          { translateX: x },
+          { translateY: y },
+          { rotate: `${body.angle}rad` },
+        ],
       }}
     />
   );
-}
+});
+
+export default Wall;

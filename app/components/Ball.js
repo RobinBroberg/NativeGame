@@ -10,14 +10,16 @@ export default function Ball({ body, radius }) {
       source={require("../../assets/football.png")}
       style={{
         position: "absolute",
-        left: x,
-        top: y,
         width: radius * 2,
         height: radius * 2,
         borderRadius: radius,
-        transform: [{ rotate: `${angle}rad` }],
+        resizeMode: "contain",
+        transform: [
+          { translateX: x },
+          { translateY: y },
+          { rotate: `${angle}rad` },
+        ],
       }}
-      resizeMode="contain"
     />
   );
 }

@@ -1,24 +1,36 @@
+import { memo } from "react";
 import { Image } from "react-native";
 
-export default function GoalPlatform({ body, size, cameraY }) {
+const GoalPlatform = memo(function GoalPlatform({ body, size, cameraY }) {
   const width = size[0];
   const height = size[1];
+  const yOffset = cameraY?.current ?? 0;
 
-  const x = body.position.x - width / 2;
-  const y = body.position.y - height / 2 - 20;
+  const baseX = body.position.x - width / 2;
+  const baseY = body.position.y - height / 2 + yOffset;
+
+  const imageWidth = width * 3;
+  const imageHeight = height * 7;
+
+  const translateX = baseX - width;
+  const translateY = baseY - height * 5 - 15;
 
   return (
     <Image
       source={require("../../assets/soccer-goal.png")}
       style={{
         position: "absolute",
-        left: x - width,
-        top: y - height * 5,
-        width: width * 3,
-        height: height * 7,
+        width: imageWidth,
+        height: imageHeight,
         resizeMode: "contain",
-        transform: [{ rotate: `${body.angle}rad` }],
+        transform: [
+          { translateX },
+          { translateY },
+          { rotate: `${body.angle}rad` },
+        ],
       }}
     />
   );
-}
+});
+
+export default GoalPlatform;

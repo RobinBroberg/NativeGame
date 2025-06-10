@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { View } from "react-native";
 
-export default function RoundWall({ body, size, cameraY }) {
+const RoundWall = memo(function RoundWall({ body, size, cameraY }) {
   const diameter = size[0];
   const yOffset = cameraY?.current ?? 0;
 
@@ -11,8 +12,6 @@ export default function RoundWall({ body, size, cameraY }) {
     <View
       style={{
         position: "absolute",
-        left: x,
-        top: y,
         width: diameter,
         height: diameter,
         borderRadius: diameter / 2,
@@ -22,10 +21,16 @@ export default function RoundWall({ body, size, cameraY }) {
         shadowColor: "#ff0000",
         shadowOffset: { width: 0, height: 2 },
         elevation: 10,
-        transform: [{ rotate: `${body.angle}rad` }],
+        transform: [
+          { translateX: x },
+          { translateY: y },
+          { rotate: `${body.angle}rad` },
+        ],
         justifyContent: "center",
         alignItems: "center",
       }}
-    ></View>
+    />
   );
-}
+});
+
+export default RoundWall;
