@@ -24,6 +24,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { StatusBar } from "expo-status-bar";
 import MenuModal from "./components/MenuModal";
+import loadLevel from "./helpers/loadLevel";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -50,6 +51,11 @@ export default function Game() {
 
   const [level, setLevel] = useState(createLevel1());
 
+  const gameOverOpacity = useSharedValue(0);
+  const gameOverAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: gameOverOpacity.value,
+  }));
+
   const entities = useMemo(
     () =>
       createEntitiesFromLevel(
@@ -67,10 +73,25 @@ export default function Game() {
     [level]
   );
 
-  const gameOverOpacity = useSharedValue(0);
-  const gameOverAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: gameOverOpacity.value,
-  }));
+  const gameState = {
+    engine,
+    world,
+    cameraX,
+    cameraY,
+    setScrollX,
+    setScrollY,
+    isBallTouching,
+    setIsGameOver,
+    isPaused,
+    gameEngineRef,
+    gameOverOpacity,
+    setLevel,
+    setCurrentLevelNumber,
+    setHasFinished,
+    setIsRunning,
+    setTimer,
+    setMenuVisible,
+  };
 
   const tiltRef = getTiltRef();
 
@@ -106,66 +127,21 @@ export default function Game() {
 
   function restartGame() {
     const newLevel = createLevelByNumber(currentLevelNumber);
-
-    Matter.Engine.clear(engine);
-    engine.events = {};
-    Matter.World.clear(world, false);
-    setLevel(newLevel);
-    setIsGameOver(false);
-    setHasFinished(false);
-    setIsRunning(false);
-    setTimer(0);
-    setMenuVisible(false);
-    gameOverOpacity.value = 0;
-
-    if (gameEngineRef.current) {
-      const newEntities = createEntitiesFromLevel(
-        newLevel,
-        engine,
-        world,
-        cameraX,
-        cameraY,
-        setScrollX,
-        setScrollY,
-        isBallTouching,
-        setIsGameOver,
-        isPaused
-      );
-      gameEngineRef.current.swap(newEntities);
-    }
+    loadLevel({
+      ...gameState,
+      level: newLevel,
+      levelNumber: currentLevelNumber,
+    });
   }
 
   function nextLevel() {
     const nextLevelNum = currentLevelNumber + 1;
     const newLevel = createLevelByNumber(nextLevelNum);
-
-    Matter.Engine.clear(engine);
-    engine.events = {};
-    Matter.World.clear(world, false);
-
-    setCurrentLevelNumber(nextLevelNum);
-    setLevel(newLevel);
-    setIsGameOver(false);
-    setHasFinished(false);
-    setIsRunning(false);
-    setTimer(0);
-    setMenuVisible(false);
-
-    if (gameEngineRef.current) {
-      const newEntities = createEntitiesFromLevel(
-        newLevel,
-        engine,
-        world,
-        cameraX,
-        cameraY,
-        setScrollX,
-        setScrollY,
-        isBallTouching,
-        setIsGameOver,
-        isPaused
-      );
-      gameEngineRef.current.swap(newEntities);
-    }
+    loadLevel({
+      ...gameState,
+      level: newLevel,
+      levelNumber: nextLevelNum,
+    });
   }
 
   const handleGameEvent = (event) => {
@@ -428,7 +404,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
     top: 5,
-    backgroundColor: "rgba(30, 60, 120, 0.8)",
+    // backgroundColor: "rgba(30, 60, 120, 0.8)",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 10,

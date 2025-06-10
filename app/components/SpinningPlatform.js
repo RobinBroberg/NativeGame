@@ -16,9 +16,15 @@ export default function SpinningPlatform({ body, size, cameraY }) {
         top: y,
         width,
         height,
-        backgroundColor: "#4444AA",
-        borderWidth: 1,
-        borderColor: "#222288",
+        backgroundColor: "#b22222",
+        borderWidth: 2,
+        borderColor: "#ff4d4d",
+        borderRadius: 6,
+        shadowColor: "#ff1a1a",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.7,
+        shadowRadius: 8,
+        elevation: 10,
         transform: [{ rotate: `${body.angle}rad` }],
       }}
     />
