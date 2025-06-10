@@ -36,6 +36,7 @@ export default function Game() {
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [canJump, setCanJump] = useState(true);
 
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
@@ -126,12 +127,17 @@ export default function Game() {
   }, [level]);
 
   function restartGame() {
+    setMenuVisible(false);
+    setIsPaused(false);
     const newLevel = createLevelByNumber(currentLevelNumber);
     loadLevel({
       ...gameState,
       level: newLevel,
       levelNumber: currentLevelNumber,
     });
+    setTimeout(() => {
+      setCanJump(true);
+    }, 200);
   }
 
   function nextLevel() {
@@ -207,6 +213,7 @@ export default function Game() {
   }, [level.ball]);
 
   const handleJump = useCallback(() => {
+    if (!canJump) return;
     const now = Date.now();
     const currentBall = level.ball;
 
@@ -283,6 +290,9 @@ export default function Game() {
               if (gameEngineRef.current?.state?.entities?.physics) {
                 gameEngineRef.current.state.entities.physics.isPaused = false;
               }
+              setTimeout(() => {
+                setCanJump(true);
+              }, 200);
             }}
           />
 
