@@ -8,7 +8,7 @@ export default function Layout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: "Welcome" }} />
-      <Stack.Screen name="Game" options={{ title: "GyroBounce" }} />
+      <Stack.Screen name="Game" options={{ title: "TiltBall" }} />
     </Stack>
   );
 }

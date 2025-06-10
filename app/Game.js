@@ -137,6 +137,8 @@ export default function Game() {
   }
 
   function nextLevel() {
+    setMenuVisible(false);
+    setIsPaused(false);
     const nextLevelNum = currentLevelNumber + 1;
     const newLevel = createLevelByNumber(nextLevelNum);
     loadLevel({
@@ -250,7 +252,7 @@ export default function Game() {
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
       <LinearGradient
-        colors={["#4682b4", "#5ca0d3", "#87cefa", "#aee2ff"]}
+        colors={["#4682b6", "#5ca0d3", "#87cefa", "#aee2ff"]}
         style={{ flex: 1 }}
       >
         <View style={styles.container}>
