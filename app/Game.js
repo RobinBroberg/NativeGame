@@ -163,8 +163,11 @@ export default function Game() {
 
         const other = bodyA === currentBall ? bodyB : bodyA;
         if (other.label === "goal-bar") {
-          setHasFinished(true);
+          setTimeout(() => {
+            setHasFinished(true);
+          }, 100);
           setIsRunning(false);
+
           Vibration.vibrate(1000);
         }
         if (other.label === "round-wall") {
@@ -404,7 +407,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
     top: 5,
-    // backgroundColor: "rgba(30, 60, 120, 0.8)",
+    backgroundColor: "rgba(37, 70, 136, 0.8)",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 10,

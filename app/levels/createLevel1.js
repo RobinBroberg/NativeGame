@@ -49,6 +49,12 @@ export default function createLevel1() {
       restitution: 1,
       label: "round-wall",
     }),
+    Matter.Bodies.circle(WIDTH - 600, HEIGHT - 1200, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
     Matter.Bodies.circle(WIDTH - 600, HEIGHT - 750, 40, {
       isStatic: true,
       friction: 0.6,
@@ -202,8 +208,8 @@ export default function createLevel1() {
   }, platforms[0]);
 
   const ball = Matter.Bodies.circle(
-    lowestPlatform.position.x,
-    lowestPlatform.position.y - 2000, // adjust starting distance above lowest platform
+    lowestPlatform.position.x - 100,
+    lowestPlatform.position.y - 4000, // adjust starting distance above lowest platform
     20,
     {
       friction: 0.05,
