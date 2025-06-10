@@ -7,10 +7,11 @@ export default function Platform({ body, size, cameraY }) {
 
   const x = body.position.x - width / 2;
   const y = body.position.y - height / 2 + yOffset;
+  const brickImage = require("../../assets/bricks-1.webp");
 
   return (
     <Image
-      source={require("../../assets/bricks-1.webp")}
+      source={brickImage}
       style={{
         position: "absolute",
         left: x,

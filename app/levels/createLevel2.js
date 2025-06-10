@@ -19,7 +19,7 @@ export default function createLevel2() {
     20,
     {
       isStatic: true,
-      friction: 0.6,
+      friction: 0,
       label: "spinning-platform",
     }
   );

@@ -16,27 +16,16 @@ export default function RoundWall({ body, size, cameraY }) {
         width: diameter,
         height: diameter,
         borderRadius: diameter / 2,
-        backgroundColor: "#ff4c4c",
-        borderWidth: 2,
-        borderColor: "#600000",
+        backgroundColor: "#b22222",
+        borderWidth: 4,
+        borderColor: "#ff4d4d",
         shadowColor: "#ff0000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.7,
-        shadowRadius: 8,
         elevation: 10,
         transform: [{ rotate: `${body.angle}rad` }],
         justifyContent: "center",
         alignItems: "center",
       }}
-    >
-      <View
-        style={{
-          width: diameter * 0.5,
-          height: diameter * 0.5,
-          borderRadius: (diameter * 0.5) / 2,
-          backgroundColor: "#800000",
-        }}
-      />
-    </View>
+    ></View>
   );
 }

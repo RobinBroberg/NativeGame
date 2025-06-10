@@ -24,7 +24,7 @@ export const Physics = (entities, { time }) => {
 
   Object.entries(entities).forEach(([key, value]) => {
     if (key.startsWith("spinningPlatform") && value.body) {
-      Matter.Body.setAngle(value.body, value.body.angle + 0.05);
+      Matter.Body.setAngle(value.body, value.body.angle + 0.03);
     }
   });
 

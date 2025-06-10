@@ -163,6 +163,10 @@ export default function Game() {
 
         const other = bodyA === currentBall ? bodyB : bodyA;
         if (other.label === "goal-bar") {
+          setIsPaused(true);
+          if (gameEngineRef.current?.state?.entities?.physics) {
+            gameEngineRef.current.state.entities.physics.isPaused = true;
+          }
           setTimeout(() => {
             setHasFinished(true);
           }, 100);
