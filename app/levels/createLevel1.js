@@ -4,7 +4,7 @@ import { Dimensions } from "react-native";
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
 export default function createLevel1() {
-  const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1575, 90, 1, {
+  const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 1575, 70, 1, {
     isStatic: true,
     isSensor: false,
     label: "goal-bar",
@@ -103,13 +103,13 @@ export default function createLevel1() {
   ];
 
   const platforms = [
-    Matter.Bodies.rectangle(WIDTH / 2.6, HEIGHT - 1550, 10, 1, {
+    Matter.Bodies.rectangle(WIDTH / 2.5, HEIGHT - 1550, 10, 1, {
       isStatic: true,
       friction: 0.6,
       angle: Math.PI / 2,
       label: "goal-post",
     }),
-    Matter.Bodies.rectangle(WIDTH / 1.6, HEIGHT - 1550, 10, 1, {
+    Matter.Bodies.rectangle(WIDTH / 1.65, HEIGHT - 1550, 10, 1, {
       isStatic: true,
       friction: 0.6,
       angle: Math.PI / 2,

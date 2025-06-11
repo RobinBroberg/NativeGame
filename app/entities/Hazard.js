@@ -16,21 +16,18 @@ export default function Hazard({ body, size, cameraY }) {
   const x = body.position.x - width / 2;
   const y = body.position.y - height / 2 + yOffset;
 
-  // Animation values
   const glowIntensity = useSharedValue(0);
   const bubbleOffset1 = useSharedValue(0);
   const bubbleOffset2 = useSharedValue(0);
   const bubbleOffset3 = useSharedValue(0);
 
   useEffect(() => {
-    // Pulsing glow effect
     glowIntensity.value = withRepeat(
       withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
       -1,
       true
     );
 
-    // Bubbling effect with different timings
     bubbleOffset1.value = withRepeat(
       withSequence(
         withTiming(-5, { duration: 800 }),
@@ -59,7 +56,6 @@ export default function Hazard({ body, size, cameraY }) {
     );
   }, []);
 
-  // Animated styles
   const glowStyle = useAnimatedStyle(() => {
     const opacity = interpolate(glowIntensity.value, [0, 1], [0.6, 1]);
     const scale = interpolate(glowIntensity.value, [0, 1], [1, 1.05]);
@@ -100,13 +96,12 @@ export default function Hazard({ body, size, cameraY }) {
         height,
       }}
     >
-      {/* Base lava */}
       <Animated.View
         style={[
           {
             width: "100%",
             height: "100%",
-            backgroundColor: "#B22222", // Darker, more dangerous red
+            backgroundColor: "#B22222",
             borderRadius: 4,
             overflow: "hidden",
             borderWidth: 1,
@@ -115,7 +110,6 @@ export default function Hazard({ body, size, cameraY }) {
           glowStyle,
         ]}
       >
-        {/* Gradient effect layers */}
         <View
           style={{
             position: "absolute",
@@ -123,7 +117,7 @@ export default function Hazard({ body, size, cameraY }) {
             left: 0,
             right: 0,
             height: "40%",
-            backgroundColor: "#FF6347", // Lighter top
+            backgroundColor: "#FF6347",
             opacity: 0.8,
           }}
         />
@@ -135,12 +129,11 @@ export default function Hazard({ body, size, cameraY }) {
             left: 0,
             right: 0,
             height: "30%",
-            backgroundColor: "#DC143C", // Darker bottom
+            backgroundColor: "#DC143C",
             opacity: 0.6,
           }}
         />
 
-        {/* Animated bubbles */}
         <Animated.View
           style={[
             {
@@ -189,7 +182,6 @@ export default function Hazard({ body, size, cameraY }) {
           ]}
         />
 
-        {/* Bright hot spots - more visible */}
         <View
           style={{
             position: "absolute",
@@ -238,7 +230,6 @@ export default function Hazard({ body, size, cameraY }) {
         />
       </Animated.View>
 
-      {/* Outer glow effect - much more intense */}
       <Animated.View
         style={[
           {
@@ -256,7 +247,6 @@ export default function Hazard({ body, size, cameraY }) {
         ]}
       />
 
-      {/* Additional outer glow layer */}
       <Animated.View
         style={[
           {

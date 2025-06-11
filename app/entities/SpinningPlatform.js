@@ -19,9 +19,9 @@ const SpinningPlatform = memo(function SpinningPlatform({
         position: "absolute",
         width,
         height,
-        backgroundColor: "#ffc107", // golden yellow
+        backgroundColor: "#ffc107",
         borderWidth: 2,
-        borderColor: "#ff9800", // orange-ish border
+        borderColor: "#ff9800",
         borderRadius: 8,
         elevation: 6,
 

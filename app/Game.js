@@ -311,7 +311,7 @@ export default function Game() {
               onPress={restartGame}
               width={200}
               justifyContent="center"
-              fontSize="24"
+              fontSize={24}
             />
           </Animated.View>
 

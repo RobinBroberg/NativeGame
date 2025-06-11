@@ -17,10 +17,7 @@ const RoundWall = memo(function RoundWall({ body, size, cameraY }) {
         borderRadius: diameter / 2,
         backgroundColor: "#b22222",
         borderWidth: 4,
-        borderColor: "#ff4d4d",
-        shadowColor: "#ff0000",
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 10,
+        borderColor: "#d4af37",
         transform: [
           { translateX: x },
           { translateY: y },
