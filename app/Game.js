@@ -14,7 +14,7 @@ import { Accelerometer } from "expo-sensors";
 import createLevel1 from "./levels/createLevel1";
 import createLevel2 from "./levels/createLevel2";
 import Physics, { getTiltRef } from "./systems/Physics";
-import createEntitiesFromLevel from "./helpers/createEntities";
+import createEntitiesFromLevel from "../utils/createEntities";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, {
@@ -24,9 +24,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { StatusBar } from "expo-status-bar";
 import MenuModal from "./components/MenuModal";
-import loadLevel from "./helpers/loadLevel";
+import loadLevel from "../utils/loadLevel";
 import GameButton from "./components/GameButton";
 import { router } from "expo-router";
+import { saveHighscore, getHighscore } from "../utils/highscoreManager";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -38,6 +39,7 @@ export default function Game() {
   const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [highscore, setHighscore] = useState(null);
 
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
@@ -167,6 +169,7 @@ export default function Game() {
 
   useEffect(() => {
     function handleCollisionStart(event) {
+      if (!level?.ball) return;
       const currentBall = level.ball;
       event.pairs.forEach(({ bodyA, bodyB }) => {
         if (bodyA === currentBall || bodyB === currentBall) {
@@ -202,6 +205,7 @@ export default function Game() {
     }
 
     function handleCollisionEnd(event) {
+      if (!level?.ball) return;
       const currentBall = level.ball;
       event.pairs.forEach(({ bodyA, bodyB }) => {
         if (bodyA === currentBall || bodyB === currentBall) {
@@ -250,6 +254,13 @@ export default function Game() {
 
     return () => clearInterval(interval);
   }, [isRunning, hasFinished, isGameOver, isPaused]);
+
+  useEffect(() => {
+    if (hasFinished) {
+      saveHighscore(currentLevelNumber, timer);
+      getHighscore(currentLevelNumber).then(setHighscore);
+    }
+  }, [hasFinished]);
 
   useEffect(() => {
     if (isGameOver && !hasFinished) {
@@ -321,6 +332,9 @@ export default function Game() {
                 Level {currentLevelNumber} Complete!
               </Text>
               <Text style={styles.timeText}>Time: {timer.toFixed(1)}s</Text>
+              <Text style={styles.timeText}>
+                Best: {highscore ? `${highscore.toFixed(1)}s` : "–"}
+              </Text>
               {!nextLevelExists && (
                 <Text style={styles.timeText}>All levels completed</Text>
               )}

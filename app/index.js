@@ -3,9 +3,31 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import "react-native-reanimated";
 import GameButton from "./components/GameButton";
+import { useEffect, useState } from "react";
+import { getHighscore, clearHighscores } from "../utils/highscoreManager";
 
 export default function Home() {
   const router = useRouter();
+  const [highscores, setHighscores] = useState({});
+
+  useEffect(() => {
+    async function loadScores() {
+      const levels = [1, 2];
+      const scores = {};
+      for (const level of levels) {
+        const score = await getHighscore(level);
+        scores[level] = score;
+      }
+      setHighscores(scores);
+    }
+
+    loadScores();
+  }, []);
+
+  const handleClearHighscores = async () => {
+    await clearHighscores();
+    setHighscores({});
+  };
 
   return (
     <LinearGradient
@@ -29,7 +51,6 @@ const styles = StyleSheet.create({
     width: 700,
     height: undefined,
     aspectRatio: 3,
-    marginBottom: 10,
     resizeMode: "contain",
   },
 });
