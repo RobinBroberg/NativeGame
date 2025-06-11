@@ -10,7 +10,7 @@ const Platform = memo(function Platform({ body, size, cameraY }) {
 
   return (
     <Image
-      source={require("../assets/yellow-bricks-1.webp")}
+      source={require("../../assets/yellow-bricks-1.webp")}
       style={{
         position: "absolute",
         left: x,

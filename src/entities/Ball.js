@@ -7,7 +7,7 @@ export default function Ball({ body, radius }) {
 
   return (
     <Image
-      source={require("../assets/football.png")}
+      source={require("../../assets/football.png")}
       style={{
         position: "absolute",
         width: radius * 2,

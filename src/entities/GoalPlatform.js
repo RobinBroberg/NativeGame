@@ -17,7 +17,7 @@ const GoalPlatform = memo(function GoalPlatform({ body, size, cameraY }) {
 
   return (
     <Image
-      source={require("../assets/soccer-goal.png")}
+      source={require("../../assets/soccer-goal.png")}
       style={{
         position: "absolute",
         width: imageWidth,

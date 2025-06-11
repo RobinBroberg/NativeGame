@@ -2,9 +2,9 @@ import { StyleSheet, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import "react-native-reanimated";
-import GameButton from "./components/GameButton";
+import GameButton from "../src/components/GameButton";
 import { useEffect, useState } from "react";
-import { getHighscore, clearHighscores } from "../utils/highscoreManager";
+import { getHighscore, clearHighscores } from "../src/utils/highscoreManager";
 
 export default function Home() {
   const router = useRouter();

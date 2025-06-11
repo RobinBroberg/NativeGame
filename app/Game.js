@@ -11,10 +11,10 @@ import {
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
-import createLevel1 from "./levels/createLevel1";
-import createLevel2 from "./levels/createLevel2";
-import Physics, { getTiltRef } from "./systems/Physics";
-import createEntitiesFromLevel from "../utils/createEntities";
+import createLevel1 from "../src/levels/createLevel1";
+import createLevel2 from "../src/levels/createLevel2";
+import Physics, { getTiltRef } from "../src/systems/Physics";
+import createEntitiesFromLevel from "../src/utils/createEntities";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, {
@@ -23,11 +23,11 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { StatusBar } from "expo-status-bar";
-import MenuModal from "./components/MenuModal";
-import loadLevel from "../utils/loadLevel";
-import GameButton from "./components/GameButton";
+import MenuModal from "../src/components/MenuModal";
+import loadLevel from "../src/utils/loadLevel";
+import GameButton from "../src/components/GameButton";
 import { router } from "expo-router";
-import { saveHighscore, getHighscore } from "../utils/highscoreManager";
+import { saveHighscore, getHighscore } from "../src/utils/highscoreManager";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
