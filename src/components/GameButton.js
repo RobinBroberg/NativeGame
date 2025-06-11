@@ -12,6 +12,7 @@ export default function GameButton({
   textColor = "#4b2e00",
   borderColor = "#ff9800",
   justifyContent = "flex-start",
+  marginVertical = 10,
 }) {
   return (
     <TouchableOpacity
@@ -24,6 +25,7 @@ export default function GameButton({
           shadowColor: color,
           width: width,
           justifyContent: justifyContent,
+          marginVertical: marginVertical,
         },
       ]}
       activeOpacity={0.85}
@@ -50,7 +52,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 28,
     borderRadius: 12,
-    marginVertical: 10,
     borderWidth: 2,
 
     borderRadius: 16,

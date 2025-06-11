@@ -1,4 +1,4 @@
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import "react-native-reanimated";
@@ -36,7 +36,22 @@ export default function Home() {
     >
       <Image source={require("../assets/tiltball3.png")} style={styles.logo} />
 
-      <GameButton title="Start Game" onPress={() => router.push("/Game")} />
+      <GameButton
+        title="Start Game"
+        onPress={() => router.push("/Game")}
+        marginVertical={0}
+      />
+      {/* <GameButton title="Clear highscore" onPress={handleClearHighscores} /> */}
+      {Object.keys(highscores).length > 0 && (
+        <>
+          <Text style={styles.header}>Best Times</Text>
+          {Object.entries(highscores).map(([level, score]) => (
+            <Text key={level} style={styles.scoreText}>
+              Level {level}: {score ? `${score.toFixed(1)}s` : "–"}
+            </Text>
+          ))}
+        </>
+      )}
     </LinearGradient>
   );
 }
@@ -48,9 +63,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logo: {
-    width: 700,
+    width: 750,
     height: undefined,
     aspectRatio: 3,
     resizeMode: "contain",
+  },
+  header: {
+    fontSize: 26,
+    marginTop: 40,
+    color: "#ffd700",
+    fontWeight: "bold",
+    textShadowColor: "rgba(0,0,0,0.5)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+
+  scoreText: {
+    fontSize: 20,
+    color: "#fff",
+    marginTop: 4,
+    fontWeight: "bold",
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
   },
 });

@@ -40,6 +40,7 @@ export default function Game() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [highscore, setHighscore] = useState(null);
+  const [isNewHighscore, setIsNewHighscore] = useState(false);
 
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
@@ -257,8 +258,21 @@ export default function Game() {
 
   useEffect(() => {
     if (hasFinished) {
-      saveHighscore(currentLevelNumber, timer);
-      getHighscore(currentLevelNumber).then(setHighscore);
+      async function updateScore() {
+        const previousHigh = await getHighscore(currentLevelNumber);
+        const isNew = !previousHigh || timer < previousHigh;
+
+        if (isNew) {
+          await saveHighscore(currentLevelNumber, timer);
+          setIsNewHighscore(true);
+        } else {
+          setIsNewHighscore(false);
+        }
+
+        setHighscore(await getHighscore(currentLevelNumber));
+      }
+
+      updateScore();
     }
   }, [hasFinished]);
 
@@ -331,13 +345,26 @@ export default function Game() {
               <Text style={styles.levelCompleteText}>
                 Level {currentLevelNumber} Complete!
               </Text>
-              <Text style={styles.timeText}>Time: {timer.toFixed(1)}s</Text>
               <Text style={styles.timeText}>
-                Best: {highscore ? `${highscore.toFixed(1)}s` : "–"}
+                Time:{" "}
+                <Text
+                  style={isNewHighscore ? styles.goldText : styles.timeText}
+                >
+                  {timer.toFixed(1)}
+                </Text>
+                s
               </Text>
-              {!nextLevelExists && (
-                <Text style={styles.timeText}>All levels completed</Text>
-              )}
+
+              {isNewHighscore ? (
+                <Text style={styles.highscoreText}>
+                  <Ionicons name="trophy" size={22} /> New Record!
+                </Text>
+              ) : highscore !== null ? (
+                <Text style={styles.highscoreText2}>
+                  Best Time: {highscore.toFixed(1)}s
+                </Text>
+              ) : null}
+
               <View style={styles.buttonContainer}>
                 <GameButton
                   title="Restart level"
@@ -351,8 +378,8 @@ export default function Game() {
                 {nextLevelExists ? (
                   <GameButton
                     title="Next Level"
+                    icon="arrow-forward"
                     onPress={nextLevel}
-                    justifyContent="center"
                   />
                 ) : (
                   <GameButton
@@ -365,6 +392,11 @@ export default function Game() {
                   />
                 )}
               </View>
+              {!nextLevelExists && (
+                <Text style={[styles.timeText, styles.completedText]}>
+                  All levels completed
+                </Text>
+              )}
             </View>
           )}
 
@@ -391,6 +423,9 @@ export default function Game() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  completedText: {
+    marginTop: 20,
   },
   gameOverOverlay: {
     position: "absolute",
@@ -506,8 +541,33 @@ const styles = StyleSheet.create({
 
   menuIcon: {
     fontSize: 30,
-    color: "#fff",
+    color: "white",
     textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  highscoreText: {
+    fontSize: 20,
+    color: "#ffd700",
+    fontWeight: "bold",
+    marginTop: 5,
+    textShadowColor: "rgba(0,0,0,0.7)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  highscoreText2: {
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    marginTop: 5,
+    textShadowColor: "rgba(0,0,0,0.8)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  goldText: {
+    color: "#ffd700",
+    fontWeight: "bold",
+    textShadowColor: "rgba(0,0,0,0.5)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
