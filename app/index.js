@@ -24,10 +24,10 @@ export default function Home() {
     loadScores();
   }, []);
 
-  const handleClearHighscores = async () => {
+  async function handleClearHighscores() {
     await clearHighscores();
     setHighscores({});
-  };
+  }
 
   return (
     <LinearGradient
