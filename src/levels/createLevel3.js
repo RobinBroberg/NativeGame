@@ -106,7 +106,7 @@ export default function createLevel3() {
 
   const goalPlatform = Matter.Bodies.rectangle(
     WIDTH / 2,
-    HEIGHT - 2000,
+    HEIGHT - 2050,
     70,
     10,
     {
@@ -115,7 +115,7 @@ export default function createLevel3() {
       label: "goal",
     }
   );
-  const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 2075, 90, 1, {
+  const goalTopBar = Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 2125, 90, 1, {
     isStatic: true,
     isSensor: false,
     label: "goal-bar",

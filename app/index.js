@@ -44,7 +44,7 @@ export default function Home() {
       {/* <GameButton title="Clear highscore" onPress={handleClearHighscores} /> */}
       {Object.keys(highscores).length > 0 && (
         <>
-          <Text style={styles.header}>Best Times</Text>
+          <Text style={styles.header}>Record Times</Text>
           {Object.entries(highscores).map(([level, score]) => (
             <Text key={level} style={styles.scoreText}>
               Level {level}: {score ? `${score.toFixed(1)}s` : "–"}
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   header: {
-    fontSize: 26,
+    fontSize: 28,
     marginTop: 40,
     color: "#ffd700",
     fontWeight: "bold",
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
 
   scoreText: {
-    fontSize: 20,
+    fontSize: 22,
     color: "#fff",
     marginTop: 4,
     fontWeight: "bold",

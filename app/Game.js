@@ -37,7 +37,7 @@ export default function Game() {
   const [isRunning, setIsRunning] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [currentLevelNumber, setCurrentLevelNumber] = useState(3);
+  const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [highscore, setHighscore] = useState(null);
@@ -53,6 +53,7 @@ export default function Game() {
   const cameraX = useRef(0);
   const [scrollY, setScrollY] = useState(0);
   const [scrollX, setScrollX] = useState(0);
+
   const isBallTouching = useRef(false);
 
   const [level, setLevel] = useState(createLevelByNumber(currentLevelNumber));
@@ -268,6 +269,15 @@ export default function Game() {
   }, [isRunning, hasFinished, isGameOver, isPaused]);
 
   useEffect(() => {
+    async function loadHighscore() {
+      const score = await getHighscore(currentLevelNumber);
+      setHighscore(score);
+    }
+
+    loadHighscore();
+  }, [currentLevelNumber]);
+
+  useEffect(() => {
     if (hasFinished) {
       async function updateScore() {
         const previousHigh = await getHighscore(currentLevelNumber);
@@ -424,6 +434,41 @@ export default function Game() {
               entities={entities}
               onEvent={handleGameEvent}
             />
+            <>
+              <Text
+                style={{
+                  position: "absolute",
+                  top: level.lowestPlatformY + 20,
+                  left: WIDTH / 2 - 50,
+                  fontSize: 42,
+                  fontWeight: "bold",
+                  color: "#FFA500",
+                  textShadowColor: "#000",
+                  textShadowOffset: { width: 2, height: 2 },
+                  textShadowRadius: 5,
+                }}
+              >
+                Level {currentLevelNumber}
+              </Text>
+
+              {highscore !== null && (
+                <Text
+                  style={{
+                    position: "absolute",
+                    top: level.lowestPlatformY + 75,
+                    left: WIDTH / 2 - 50,
+                    fontSize: 18,
+                    color: "#fff",
+
+                    textShadowColor: "#000",
+                    textShadowOffset: { width: 1, height: 1 },
+                    textShadowRadius: 2,
+                  }}
+                >
+                  Best time: {highscore.toFixed(1)}s
+                </Text>
+              )}
+            </>
           </View>
         </View>
       </LinearGradient>

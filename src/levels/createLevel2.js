@@ -31,22 +31,22 @@ export default function createLevel2() {
   ];
 
   const walls = [
-    Matter.Bodies.rectangle(WIDTH - 125, HEIGHT - 325, 20, 40, {
-      isStatic: true,
-      friction: 0.6,
-    }),
-    Matter.Bodies.rectangle(WIDTH - 260, HEIGHT - 325, 20, 40, {
-      isStatic: true,
-      friction: 0.6,
-    }),
+    // Matter.Bodies.rectangle(WIDTH - 125, HEIGHT - 325, 20, 40, {
+    //   isStatic: true,
+    //   friction: 0.6,
+    // }),
+    // Matter.Bodies.rectangle(WIDTH - 260, HEIGHT - 325, 20, 40, {
+    //   isStatic: true,
+    //   friction: 0.6,
+    // }),
   ];
 
   const hazards = [
-    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 325, 100, 20, {
-      isStatic: true,
-      isSensor: true,
-      label: "hazard",
-    }),
+    // Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 325, 100, 20, {
+    //   isStatic: true,
+    //   isSensor: true,
+    //   label: "hazard",
+    // }),
   ];
 
   const goalPlatform = Matter.Bodies.rectangle(
