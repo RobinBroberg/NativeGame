@@ -11,8 +11,6 @@ import {
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
-import createLevel1 from "../src/levels/createLevel1";
-import createLevel2 from "../src/levels/createLevel2";
 import Physics, { getTiltRef } from "../src/systems/Physics";
 import createEntitiesFromLevel from "../src/utils/createEntities";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,6 +27,7 @@ import GameButton from "../src/components/GameButton";
 import { router } from "expo-router";
 import { saveHighscore, getHighscore } from "../src/utils/highscoreManager";
 import createLevel3 from "../src/levels/createLevel3";
+import createLevelByNumber from "../src/levels/levelsFactory";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -107,19 +106,6 @@ export default function Game() {
   const lastJumpTime = useRef(0);
   const maxJumps = 2;
 
-  function createLevelByNumber(levelNum) {
-    switch (levelNum) {
-      case 1:
-        return createLevel1();
-      case 2:
-        return createLevel2();
-      case 3:
-        return createLevel3();
-      default:
-        return null;
-    }
-  }
-
   const nextLevelNum = currentLevelNumber + 1;
   const nextLevelExists = createLevelByNumber(nextLevelNum) !== null;
 
@@ -137,6 +123,14 @@ export default function Game() {
       subscription.remove();
     };
   }, [level]);
+
+  function startGame() {
+    setShowIntro(false);
+    setIsPaused(false);
+    if (gameEngineRef.current?.state?.entities?.physics) {
+      gameEngineRef.current.state.entities.physics.isPaused = false;
+    }
+  }
 
   function restartGame() {
     setMenuVisible(false);
@@ -307,12 +301,15 @@ export default function Game() {
 
   useEffect(() => {
     setShowIntro(true);
-    const timer = setTimeout(() => {
-      setShowIntro(false);
-    }, 2000);
+    setIsPaused(true);
 
-    return () => clearTimeout(timer);
+    setTimeout(() => {
+      if (gameEngineRef.current?.state?.entities?.physics) {
+        gameEngineRef.current.state.entities.physics.isPaused = true;
+      }
+    }, 50);
   }, [currentLevelNumber]);
+
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
       <LinearGradient
@@ -443,46 +440,52 @@ export default function Game() {
               entities={entities}
               onEvent={handleGameEvent}
             />
-            <>
-              <Text
-                style={{
-                  position: "absolute",
-                  top: level.lowestPlatformY + 20,
-                  left: WIDTH / 2 - 50,
-                  fontSize: 42,
-                  fontWeight: "bold",
-                  color: "#FFA500",
-                  textShadowColor: "#000",
-                  textShadowOffset: { width: 2, height: 2 },
-                  textShadowRadius: 5,
-                }}
-              >
-                Level {currentLevelNumber}
-              </Text>
-
-              {highscore !== null && (
+            {!showIntro && (
+              <>
                 <Text
                   style={{
                     position: "absolute",
-                    top: level.lowestPlatformY + 75,
+                    top: level.lowestPlatformY + 20,
                     left: WIDTH / 2 - 50,
-                    fontSize: 18,
-                    color: "#fff",
+                    fontSize: 42,
+                    fontWeight: "bold",
+                    color: "#FFA500",
                     textShadowColor: "#000",
-                    textShadowOffset: { width: 1, height: 1 },
-                    textShadowRadius: 2,
+                    textShadowOffset: { width: 2, height: 2 },
+                    textShadowRadius: 5,
                   }}
                 >
-                  Best time: {highscore.toFixed(1)}s
+                  Level {currentLevelNumber}
                 </Text>
-              )}
-            </>
+
+                {highscore !== null && (
+                  <Text
+                    style={{
+                      position: "absolute",
+                      top: level.lowestPlatformY + 75,
+                      left: WIDTH / 2 - 50,
+                      fontSize: 18,
+                      color: "#fff",
+                      textShadowColor: "#000",
+                      textShadowOffset: { width: 1, height: 1 },
+                      textShadowRadius: 2,
+                    }}
+                  >
+                    Best time: {highscore.toFixed(1)}s
+                  </Text>
+                )}
+              </>
+            )}
           </View>
           {showIntro && (
-            <View style={styles.introOverlay}>
-              <Text style={styles.introTitle}>Level {currentLevelNumber}</Text>
-              <Text style={styles.introSubtitle}>Good luck!</Text>
-            </View>
+            <TouchableWithoutFeedback onPress={startGame}>
+              <View style={styles.introOverlay}>
+                <Text style={styles.introTitle}>
+                  Level {currentLevelNumber}
+                </Text>
+                <Text style={styles.introSubtitle}>Tap to Start</Text>
+              </View>
+            </TouchableWithoutFeedback>
           )}
         </View>
       </LinearGradient>
@@ -654,7 +657,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     zIndex: 10,
-    paddingBottom: 200,
+    paddingBottom: 100,
   },
   introTitle: {
     fontSize: 42,
