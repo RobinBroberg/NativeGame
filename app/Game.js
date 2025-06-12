@@ -11,7 +11,7 @@ import {
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
-import Physics, { getTiltRef } from "../src/systems/Physics";
+import Physics, { getTiltRef } from "../src/systems/Physics2";
 import createEntitiesFromLevel from "../src/utils/createEntities";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,8 +26,14 @@ import loadLevel from "../src/utils/loadLevel";
 import GameButton from "../src/components/GameButton";
 import { router } from "expo-router";
 import { saveHighscore, getHighscore } from "../src/utils/highscoreManager";
-import createLevel3 from "../src/levels/createLevel3";
 import createLevelByNumber from "../src/levels/levelsFactory";
+import { setupCollisionHandlers } from "../src/systems/collisonHandlers";
+import {
+  pauseGame,
+  resumeGame,
+  startGame,
+  restartGame,
+} from "../src/utils/gameControls";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -124,25 +130,6 @@ export default function Game() {
     };
   }, [level]);
 
-  function startGame() {
-    setShowIntro(false);
-    setIsPaused(false);
-    if (gameEngineRef.current?.state?.entities?.physics) {
-      gameEngineRef.current.state.entities.physics.isPaused = false;
-    }
-  }
-
-  function restartGame() {
-    setMenuVisible(false);
-    setIsPaused(false);
-    const newLevel = createLevelByNumber(currentLevelNumber);
-    loadLevel({
-      ...gameState,
-      level: newLevel,
-      levelNumber: currentLevelNumber,
-    });
-  }
-
   function nextLevel() {
     setMenuVisible(false);
     setIsPaused(false);
@@ -163,72 +150,30 @@ export default function Game() {
     if (event.type === "next-level") {
       nextLevel();
     } else if (event.type === "restart-level") {
-      restartGame();
+      restartGame({
+        setMenuVisible,
+        setIsPaused,
+        createLevelByNumber,
+        currentLevelNumber,
+        gameState,
+        loadLevel,
+      });
     }
   }
 
   useEffect(() => {
-    function handleCollisionStart(event) {
-      if (!level?.ball) return;
-      const currentBall = level.ball;
+    const cleanup = setupCollisionHandlers({
+      engine,
+      level,
+      gameEngineRef,
+      setIsPaused,
+      setHasFinished,
+      setIsRunning,
+      isBallTouching,
+      jumpCount,
+    });
 
-      event.pairs.forEach(({ bodyA, bodyB }) => {
-        const isBallA = bodyA === currentBall;
-        const isBallB = bodyB === currentBall;
-
-        if (isBallA || isBallB) {
-          const other = isBallA ? bodyB : bodyA;
-
-          // Only reset jumps if not hitting a wall
-          if (other.label !== "wall") {
-            isBallTouching.current = true;
-            jumpCount.current = 0;
-          }
-
-          if (other.label === "goal-bar") {
-            setIsPaused(true);
-            if (gameEngineRef.current?.state?.entities?.physics) {
-              gameEngineRef.current.state.entities.physics.isPaused = true;
-            }
-            setTimeout(() => {
-              setHasFinished(true);
-            }, 100);
-            setIsRunning(false);
-            Vibration.vibrate(1000);
-          }
-
-          if (other.label === "round-wall") {
-            const normal = Matter.Vector.normalise({
-              x: currentBall.position.x - other.position.x,
-              y: currentBall.position.y - other.position.y,
-            });
-
-            Matter.Body.setVelocity(currentBall, {
-              x: normal.x * 7,
-              y: normal.y * 15,
-            });
-          }
-        }
-      });
-    }
-
-    function handleCollisionEnd(event) {
-      if (!level?.ball) return;
-      const currentBall = level.ball;
-      event.pairs.forEach(({ bodyA, bodyB }) => {
-        if (bodyA === currentBall || bodyB === currentBall) {
-          isBallTouching.current = false;
-        }
-      });
-    }
-
-    Matter.Events.on(engine, "collisionStart", handleCollisionStart);
-    Matter.Events.on(engine, "collisionEnd", handleCollisionEnd);
-
-    return () => {
-      Matter.Events.off(engine, "collisionStart", handleCollisionStart);
-      Matter.Events.off(engine, "collisionEnd", handleCollisionEnd);
-    };
+    return cleanup;
   }, [level.ball]);
 
   const handleJump = useCallback(() => {
@@ -322,10 +267,7 @@ export default function Game() {
             style={styles.menuButton}
             onPress={() => {
               setMenuVisible(true);
-              setIsPaused(true);
-              if (gameEngineRef.current?.state?.entities?.physics) {
-                gameEngineRef.current.state.entities.physics.isPaused = true;
-              }
+              pauseGame({ setIsPaused, gameEngineRef });
             }}
             hitSlop={{ top: 50, bottom: 50, left: 50, right: 50 }}
           >
@@ -341,14 +283,20 @@ export default function Game() {
           <MenuModal
             menuVisible={menuVisible}
             setMenuVisible={setMenuVisible}
-            handleRestart={restartGame}
+            handleRestart={() =>
+              restartGame({
+                setMenuVisible,
+                setIsPaused,
+                createLevelByNumber,
+                currentLevelNumber,
+                gameState,
+                loadLevel,
+              })
+            }
             resumeGame={() => {
               setMenuVisible(false);
               if (!hasFinished && !isGameOver) {
-                setIsPaused(false);
-                if (gameEngineRef.current?.state?.entities?.physics) {
-                  gameEngineRef.current.state.entities.physics.isPaused = false;
-                }
+                resumeGame({ setIsPaused, gameEngineRef });
               }
             }}
           />
@@ -360,7 +308,16 @@ export default function Game() {
             <Text style={styles.gameOverText}>Game Over</Text>
             <GameButton
               title="Play Again"
-              onPress={restartGame}
+              onPress={() =>
+                restartGame({
+                  setMenuVisible,
+                  setIsPaused,
+                  createLevelByNumber,
+                  currentLevelNumber,
+                  gameState,
+                  loadLevel,
+                })
+              }
               width={200}
               justifyContent="center"
               fontSize={24}
@@ -395,7 +352,16 @@ export default function Game() {
               <View style={styles.buttonContainer}>
                 <GameButton
                   title="Restart level"
-                  onPress={restartGame}
+                  onPress={() =>
+                    restartGame({
+                      setMenuVisible,
+                      setIsPaused,
+                      createLevelByNumber,
+                      currentLevelNumber,
+                      gameState,
+                      loadLevel,
+                    })
+                  }
                   icon="refresh-outline"
                   color={nextLevelExists ? "#ff6b6b" : undefined}
                   borderColor={nextLevelExists ? "#ff5252" : undefined}
@@ -478,7 +444,11 @@ export default function Game() {
             )}
           </View>
           {showIntro && (
-            <TouchableWithoutFeedback onPress={startGame}>
+            <TouchableWithoutFeedback
+              onPress={() =>
+                startGame({ setShowIntro, setIsPaused, gameEngineRef })
+              }
+            >
               <View style={styles.introOverlay}>
                 <Text style={styles.introTitle}>
                   Level {currentLevelNumber}

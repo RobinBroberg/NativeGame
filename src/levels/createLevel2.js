@@ -5,7 +5,7 @@ const { width: WIDTH, height: HEIGHT } = Dimensions.get("window");
 
 export default function createLevel2() {
   const platforms = [
-    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 300, 220, 20, {
+    Matter.Bodies.rectangle(WIDTH / 1.7, HEIGHT - 300, 220, 20, {
       isStatic: true,
       friction: 0.6,
       label: "platform",
