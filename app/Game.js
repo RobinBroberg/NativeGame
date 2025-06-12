@@ -11,7 +11,7 @@ import {
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
 import { Accelerometer } from "expo-sensors";
-import Physics, { getTiltRef } from "../src/systems/Physics2";
+import Physics, { getTiltRef } from "../src/systems/physics";
 import createEntitiesFromLevel from "../src/utils/createEntities";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
