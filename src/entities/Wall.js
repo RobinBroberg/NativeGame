@@ -15,9 +15,11 @@ const Wall = memo(function Wall({ body, size, cameraY }) {
         position: "absolute",
         width,
         height,
-        backgroundColor: "#8B0000",
-        borderWidth: 1,
-        borderColor: "#600000",
+        backgroundColor: "#ffc107",
+        borderWidth: 2,
+        borderColor: "#ff9800",
+        elevation: 6,
+
         transform: [
           { translateX: x },
           { translateY: y },

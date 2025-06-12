@@ -28,6 +28,7 @@ import loadLevel from "../src/utils/loadLevel";
 import GameButton from "../src/components/GameButton";
 import { router } from "expo-router";
 import { saveHighscore, getHighscore } from "../src/utils/highscoreManager";
+import createLevel3 from "../src/levels/createLevel3";
 
 const { height: HEIGHT, width: WIDTH } = Dimensions.get("window");
 
@@ -36,7 +37,7 @@ export default function Game() {
   const [isRunning, setIsRunning] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
+  const [currentLevelNumber, setCurrentLevelNumber] = useState(3);
   const [menuVisible, setMenuVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [highscore, setHighscore] = useState(null);
@@ -54,7 +55,7 @@ export default function Game() {
   const [scrollX, setScrollX] = useState(0);
   const isBallTouching = useRef(false);
 
-  const [level, setLevel] = useState(createLevel1());
+  const [level, setLevel] = useState(createLevelByNumber(currentLevelNumber));
 
   const gameOverOpacity = useSharedValue(0);
   const gameOverAnimatedStyle = useAnimatedStyle(() => ({
@@ -110,6 +111,8 @@ export default function Game() {
         return createLevel1();
       case 2:
         return createLevel2();
+      case 3:
+        return createLevel3();
       default:
         return null;
     }
@@ -172,35 +175,43 @@ export default function Game() {
     function handleCollisionStart(event) {
       if (!level?.ball) return;
       const currentBall = level.ball;
+
       event.pairs.forEach(({ bodyA, bodyB }) => {
-        if (bodyA === currentBall || bodyB === currentBall) {
-          isBallTouching.current = true;
-          jumpCount.current = 0;
-        }
+        const isBallA = bodyA === currentBall;
+        const isBallB = bodyB === currentBall;
 
-        const other = bodyA === currentBall ? bodyB : bodyA;
-        if (other.label === "goal-bar") {
-          setIsPaused(true);
-          if (gameEngineRef.current?.state?.entities?.physics) {
-            gameEngineRef.current.state.entities.physics.isPaused = true;
+        if (isBallA || isBallB) {
+          const other = isBallA ? bodyB : bodyA;
+
+          // Only reset jumps if not hitting a wall
+          if (other.label !== "wall") {
+            isBallTouching.current = true;
+            jumpCount.current = 0;
           }
-          setTimeout(() => {
-            setHasFinished(true);
-          }, 100);
-          setIsRunning(false);
 
-          Vibration.vibrate(1000);
-        }
-        if (other.label === "round-wall") {
-          const normal = Matter.Vector.normalise({
-            x: currentBall.position.x - other.position.x,
-            y: currentBall.position.y - other.position.y,
-          });
+          if (other.label === "goal-bar") {
+            setIsPaused(true);
+            if (gameEngineRef.current?.state?.entities?.physics) {
+              gameEngineRef.current.state.entities.physics.isPaused = true;
+            }
+            setTimeout(() => {
+              setHasFinished(true);
+            }, 100);
+            setIsRunning(false);
+            Vibration.vibrate(1000);
+          }
 
-          Matter.Body.setVelocity(currentBall, {
-            x: normal.x * 7,
-            y: normal.y * 15,
-          });
+          if (other.label === "round-wall") {
+            const normal = Matter.Vector.normalise({
+              x: currentBall.position.x - other.position.x,
+              y: currentBall.position.y - other.position.y,
+            });
+
+            Matter.Body.setVelocity(currentBall, {
+              x: normal.x * 7,
+              y: normal.y * 15,
+            });
+          }
         }
       });
     }

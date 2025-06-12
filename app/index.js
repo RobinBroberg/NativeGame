@@ -1,4 +1,4 @@
-import { StyleSheet, Image, View, Text } from "react-native";
+import { StyleSheet, Image, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import "react-native-reanimated";
@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     async function loadScores() {
-      const levels = [1, 2];
+      const levels = [1, 2, 3];
       const scores = {};
       for (const level of levels) {
         const score = await getHighscore(level);
