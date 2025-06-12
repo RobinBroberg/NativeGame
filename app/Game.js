@@ -459,7 +459,6 @@ export default function Game() {
                     left: WIDTH / 2 - 50,
                     fontSize: 18,
                     color: "#fff",
-
                     textShadowColor: "#000",
                     textShadowOffset: { width: 1, height: 1 },
                     textShadowRadius: 2,
@@ -593,6 +592,9 @@ const styles = StyleSheet.create({
     left: 30,
     zIndex: 100,
     borderRadius: 20,
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 
   menuIcon: {

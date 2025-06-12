@@ -38,7 +38,11 @@ export default function Home() {
 
       <GameButton
         title="Start Game"
-        onPress={() => router.push("/Game")}
+        onPress={() => {
+          setTimeout(() => {
+            router.push("/Game");
+          }, 200);
+        }}
         marginVertical={0}
       />
       {/* <GameButton title="Clear highscore" onPress={handleClearHighscores} /> */}
