@@ -42,6 +42,7 @@ export default function Game() {
   const [isPaused, setIsPaused] = useState(false);
   const [highscore, setHighscore] = useState(null);
   const [isNewHighscore, setIsNewHighscore] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
 
   const engine = useRef(
     Matter.Engine.create({ enableSleeping: false })
@@ -304,6 +305,14 @@ export default function Game() {
     }
   }, [isGameOver, hasFinished]);
 
+  useEffect(() => {
+    setShowIntro(true);
+    const timer = setTimeout(() => {
+      setShowIntro(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [currentLevelNumber]);
   return (
     <TouchableWithoutFeedback onPress={handleJump}>
       <LinearGradient
@@ -469,6 +478,12 @@ export default function Game() {
               )}
             </>
           </View>
+          {showIntro && (
+            <View style={styles.introOverlay}>
+              <Text style={styles.introTitle}>Level {currentLevelNumber}</Text>
+              <Text style={styles.introSubtitle}>Good luck!</Text>
+            </View>
+          )}
         </View>
       </LinearGradient>
     </TouchableWithoutFeedback>
@@ -628,5 +643,27 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0,0,0,0.5)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+  },
+  introOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+    paddingBottom: 200,
+  },
+  introTitle: {
+    fontSize: 42,
+    fontWeight: "bold",
+    color: "#FFD700",
+  },
+  introSubtitle: {
+    fontSize: 24,
+    color: "#fff",
+    marginTop: 10,
   },
 });

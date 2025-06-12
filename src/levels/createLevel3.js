@@ -81,7 +81,6 @@ export default function createLevel3() {
     Matter.Bodies.rectangle(WIDTH + 200, HEIGHT - 400, 20, 200, {
       isStatic: true,
       friction: 0,
-
       label: "wall",
     }),
     Matter.Bodies.rectangle(WIDTH - 190, HEIGHT - 320, 20, 25, {
