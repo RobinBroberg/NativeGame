@@ -216,13 +216,18 @@ export default function createLevel1() {
     }),
   ];
 
+  const clouds = [
+    { x: WIDTH, y: HEIGHT - 1700 },
+    { x: WIDTH / 3, y: HEIGHT - 1750 },
+  ];
+
   const lowestPlatform = platforms.reduce((lowest, current) => {
     return current.position.y > lowest.position.y ? current : lowest;
   }, platforms[0]);
 
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 30, // adjust starting distance above lowest platform
+    lowestPlatform.position.y - 3000, // adjust starting distance above lowest platform
     20,
     {
       friction: 0.05,
@@ -246,6 +251,7 @@ export default function createLevel1() {
       ...roundWalls,
     ],
     walls,
+    clouds,
     goalPlatform,
     lowestPlatformY: lowestPlatform.position.y,
     roundWalls,

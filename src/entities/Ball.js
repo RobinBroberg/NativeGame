@@ -14,6 +14,7 @@ export default function Ball({ body, radius }) {
         height: radius * 2,
         borderRadius: radius,
         resizeMode: "contain",
+        zIndex: 10,
         transform: [
           { translateX: x },
           { translateY: y },

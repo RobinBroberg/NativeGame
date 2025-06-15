@@ -5,6 +5,7 @@ import Wall from "../entities/Wall";
 import RoundWall from "../entities/RoundWall";
 import SpinningPlatform from "../entities/SpinningPlatform";
 import Hazard from "../entities/Hazard";
+import Cloud from "../components/Cloud";
 
 export default function createEntitiesFromLevel(
   level,
@@ -99,6 +100,12 @@ export default function createEntitiesFromLevel(
         wall.bounds.max.y - wall.bounds.min.y,
       ],
       renderer: Wall,
+    };
+  });
+  level.clouds?.forEach((cloud, i) => {
+    entities[`cloud${i}`] = {
+      position: cloud,
+      renderer: Cloud,
     };
   });
 

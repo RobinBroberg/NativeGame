@@ -84,6 +84,28 @@ export default function createLevel2() {
     }),
   ];
 
+  const clouds = [
+    { x: WIDTH - 50, y: HEIGHT - 250 },
+    { x: WIDTH - 300, y: HEIGHT - 150 },
+    { x: WIDTH - 300, y: HEIGHT - 800 },
+    { x: WIDTH - 400, y: HEIGHT - 1400 },
+    { x: WIDTH, y: HEIGHT - 1500 },
+    { x: WIDTH + 350, y: HEIGHT - 1400 },
+    { x: WIDTH + 550, y: HEIGHT - 1600 },
+    { x: WIDTH + 850, y: HEIGHT - 1650 },
+    { x: WIDTH + 1200, y: HEIGHT - 1800 },
+    { x: WIDTH + 2100, y: HEIGHT - 2250 },
+
+    { x: WIDTH + 2050, y: HEIGHT - 1800 },
+    { x: WIDTH + 1900, y: HEIGHT - 1500 },
+    { x: WIDTH + 2100, y: HEIGHT - 1100 },
+
+    { x: WIDTH + 1700, y: HEIGHT - 1500 },
+    { x: WIDTH + 1300, y: HEIGHT - 1100 },
+    { x: WIDTH + 1100, y: HEIGHT - 1200 },
+    { x: WIDTH + 1000, y: HEIGHT - 900 },
+  ];
+
   const walls = [
     // Matter.Bodies.rectangle(WIDTH - 125, HEIGHT - 325, 20, 40, {
     //   isStatic: true,
@@ -161,6 +183,7 @@ export default function createLevel2() {
     goalTopBar,
     walls,
     roundWalls,
+    clouds,
     lowestPlatformY: lowestPlatform.position.y,
   };
 }

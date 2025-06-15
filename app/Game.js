@@ -407,6 +407,7 @@ export default function Game() {
               entities={entities}
               onEvent={handleGameEvent}
             />
+
             {!showIntro && (
               <>
                 <Text
