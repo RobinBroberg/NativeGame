@@ -10,6 +10,7 @@ export function setupCollisionHandlers({
   setIsRunning,
   isBallTouching,
   jumpCount,
+  setIsGameOver,
 }) {
   function handleCollisionStart(event) {
     if (!level?.ball) return;
@@ -21,6 +22,21 @@ export function setupCollisionHandlers({
 
       if (isBallA || isBallB) {
         const other = isBallA ? bodyB : bodyA;
+
+        if (other.label === "hazard") {
+          setIsPaused(true);
+          setIsRunning(false);
+          setTimeout(() => {
+            setIsGameOver(true);
+          }, 200);
+
+          if (gameEngineRef.current?.state?.entities?.physics) {
+            gameEngineRef.current.state.entities.physics.isPaused = true;
+          }
+
+          Vibration.vibrate(500);
+          return;
+        }
 
         if (other.label !== "wall") {
           isBallTouching.current = true;

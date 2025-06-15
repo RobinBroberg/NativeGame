@@ -58,17 +58,20 @@ export default function createEntitiesFromLevel(
   level.platforms.forEach((platform, i) => {
     const width = platform.bounds.max.x - platform.bounds.min.x;
     const height = platform.bounds.max.y - platform.bounds.min.y;
+    const spinDirection = platform.plugin?.spinDirection || 1;
 
     if (platform.label === "spinning-platform") {
       entities[`spinningPlatform${i}`] = {
         body: platform,
         size: [platform.bounds.max.x - platform.bounds.min.x, 20],
+        spinDirection,
         renderer: SpinningPlatform,
       };
     } else if (platform.label === "moving-platform") {
       entities[`movingPlatform${i}`] = {
         body: platform,
         size: [width, height],
+        baseX: platform.position.x,
         renderer: Platform,
       };
     } else if (platform.label === "hazard") {

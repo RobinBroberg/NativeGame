@@ -19,17 +19,18 @@ export function Physics(entities, { time }) {
 
   const amplitude = 100;
   const speed = 0.002;
-  const baseX = WIDTH / 2;
 
   Object.entries(entities).forEach(([key, value]) => {
     if (key.startsWith("spinningPlatform") && value.body) {
-      Matter.Body.setAngle(value.body, value.body.angle + 0.03);
+      const direction = value.spinDirection || 1;
+      Matter.Body.setAngle(value.body, value.body.angle + 0.03 * direction);
     }
   });
 
   Object.entries(entities).forEach(([key, value]) => {
     if (key.startsWith("movingPlatform") && value.body) {
       const offset = Math.sin(tick * speed) * amplitude;
+      const baseX = value.baseX ?? value.body.position.x;
       Matter.Body.setPosition(value.body, {
         x: baseX + offset,
         y: value.body.position.y,

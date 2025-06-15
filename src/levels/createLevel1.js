@@ -207,6 +207,7 @@ export default function createLevel1() {
       isStatic: true,
       friction: 0,
       label: "spinning-platform",
+      plugin: { spinDirection: -1 },
     }),
     Matter.Bodies.rectangle(WIDTH - 280, HEIGHT + 300, 150, 20, {
       isStatic: true,

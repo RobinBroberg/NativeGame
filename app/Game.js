@@ -42,7 +42,7 @@ export default function Game() {
   const [isRunning, setIsRunning] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [currentLevelNumber, setCurrentLevelNumber] = useState(1);
+  const [currentLevelNumber, setCurrentLevelNumber] = useState(2);
   const [menuVisible, setMenuVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [highscore, setHighscore] = useState(null);
@@ -171,6 +171,7 @@ export default function Game() {
       setIsRunning,
       isBallTouching,
       jumpCount,
+      setIsGameOver,
     });
 
     return cleanup;

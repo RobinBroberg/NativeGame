@@ -96,7 +96,7 @@ export default function createLevel3() {
   ];
 
   const hazards = [
-    Matter.Bodies.rectangle(WIDTH / 1.5, HEIGHT - 320, 100, 20, {
+    Matter.Bodies.rectangle(WIDTH / 1.5, HEIGHT - 320, 100, 18, {
       isStatic: true,
       isSensor: true,
       label: "hazard",
