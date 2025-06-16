@@ -5,7 +5,7 @@ import Wall from "../entities/Wall";
 import RoundWall from "../entities/RoundWall";
 import SpinningPlatform from "../entities/SpinningPlatform";
 import Hazard from "../entities/Hazard";
-import Cloud from "../components/Cloud";
+import Cloud from "../entities/Cloud";
 
 export default function createEntitiesFromLevel(
   level,
