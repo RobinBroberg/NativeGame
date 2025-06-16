@@ -41,4 +41,5 @@ export function restartGame({
     level: newLevel,
     levelNumber: currentLevelNumber,
   });
+  gameState.setShowIntro(false);
 }

@@ -104,6 +104,7 @@ export default function Game() {
     setIsRunning,
     setTimer,
     setMenuVisible,
+    setShowIntro,
   };
 
   const tiltRef = getTiltRef();
@@ -297,6 +298,7 @@ export default function Game() {
             resumeGame={() => {
               setMenuVisible(false);
               if (!hasFinished && !isGameOver) {
+                setShowIntro(false);
                 resumeGame({ setIsPaused, gameEngineRef });
               }
             }}
