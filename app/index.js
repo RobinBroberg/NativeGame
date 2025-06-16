@@ -1,14 +1,23 @@
-import { StyleSheet, Image, Text } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  Text,
+  Modal,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import "react-native-reanimated";
 import GameButton from "../src/components/GameButton";
 import { useEffect, useState } from "react";
 import { getHighscore, clearHighscores } from "../src/utils/highscoreManager";
+import InfoModal from "../src/components/InfoModal";
 
 export default function Home() {
   const router = useRouter();
   const [highscores, setHighscores] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     async function loadScores() {
@@ -34,6 +43,17 @@ export default function Home() {
       colors={["#4682b6", "#5ca0d3", "#87cefa", "#aee2ff"]}
       style={styles.container}
     >
+      <TouchableOpacity
+        style={styles.infoButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.infoText}>?</Text>
+      </TouchableOpacity>
+      <InfoModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
+
       <Image source={require("../assets/tiltball3.png")} style={styles.logo} />
 
       <GameButton
@@ -90,5 +110,23 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
+  },
+  infoButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    backgroundColor: "#ffd700",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
+
+  infoText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
   },
 });
