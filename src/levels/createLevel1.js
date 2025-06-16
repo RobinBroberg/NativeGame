@@ -69,12 +69,6 @@ export default function createLevel1() {
       restitution: 1,
       label: "round-wall",
     }),
-    Matter.Bodies.circle(WIDTH - 800, HEIGHT + 2250, 40, {
-      isStatic: true,
-      friction: 0.6,
-      restitution: 1,
-      label: "round-wall",
-    }),
     Matter.Bodies.circle(WIDTH - 600, HEIGHT + 2050, 40, {
       isStatic: true,
       friction: 0.6,
@@ -89,6 +83,12 @@ export default function createLevel1() {
       label: "round-wall",
     }),
     Matter.Bodies.circle(WIDTH - 550, HEIGHT + 1600, 40, {
+      isStatic: true,
+      friction: 0.6,
+      restitution: 1,
+      label: "round-wall",
+    }),
+    Matter.Bodies.circle(WIDTH - 700, HEIGHT + 1000, 30, {
       isStatic: true,
       friction: 0.6,
       restitution: 1,
@@ -219,6 +219,10 @@ export default function createLevel1() {
   const clouds = [
     { x: WIDTH, y: HEIGHT - 1700 },
     { x: WIDTH / 3, y: HEIGHT - 1750 },
+    { x: WIDTH - 500, y: HEIGHT - 1650 },
+    { x: WIDTH - 700, y: HEIGHT - 400 },
+    { x: WIDTH - 900, y: HEIGHT },
+    { x: WIDTH - 600, y: HEIGHT + 400 },
   ];
 
   const lowestPlatform = platforms.reduce((lowest, current) => {
@@ -227,7 +231,7 @@ export default function createLevel1() {
 
   const ball = Matter.Bodies.circle(
     lowestPlatform.position.x,
-    lowestPlatform.position.y - 3000, // adjust starting distance above lowest platform
+    lowestPlatform.position.y - 30, // adjust starting distance above lowest platform
     20,
     {
       friction: 0.05,

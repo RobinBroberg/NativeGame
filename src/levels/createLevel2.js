@@ -93,7 +93,7 @@ export default function createLevel2() {
     { x: WIDTH + 350, y: HEIGHT - 1400 },
     { x: WIDTH + 550, y: HEIGHT - 1600 },
     { x: WIDTH + 850, y: HEIGHT - 1650 },
-    { x: WIDTH + 1200, y: HEIGHT - 1800 },
+    { x: WIDTH + 1150, y: HEIGHT - 1900 },
     { x: WIDTH + 2100, y: HEIGHT - 2250 },
 
     { x: WIDTH + 2050, y: HEIGHT - 1800 },
@@ -104,6 +104,9 @@ export default function createLevel2() {
     { x: WIDTH + 1300, y: HEIGHT - 1100 },
     { x: WIDTH + 1100, y: HEIGHT - 1200 },
     { x: WIDTH + 1000, y: HEIGHT - 900 },
+
+    { x: WIDTH + 2100, y: HEIGHT - 2800 },
+    { x: WIDTH + 1800, y: HEIGHT - 2750 },
   ];
 
   const walls = [

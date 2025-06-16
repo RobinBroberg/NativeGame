@@ -103,6 +103,13 @@ export default function createLevel3() {
     }),
   ];
 
+  const clouds = [
+    { x: WIDTH / 2 - 100, y: HEIGHT - 2400 },
+    { x: WIDTH / 2 + 100, y: HEIGHT - 2300 },
+    { x: WIDTH / 2 + 400, y: HEIGHT - 1800 },
+    { x: WIDTH / 2 - 200, y: HEIGHT - 1900 },
+  ];
+
   const goalPlatform = Matter.Bodies.rectangle(
     WIDTH / 2,
     HEIGHT - 2150,
@@ -154,6 +161,7 @@ export default function createLevel3() {
     goalPlatform,
     goalTopBar,
     walls,
+    clouds,
     roundWalls,
     lowestPlatformY: lowestPlatform.position.y,
   };
