@@ -45,7 +45,7 @@ export default function createLevel3() {
   ];
 
   const spinningPlatforms = [
-    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 600, 150, 20, {
+    Matter.Bodies.rectangle(WIDTH / 2, HEIGHT - 610, 150, 20, {
       isStatic: true,
       friction: 0,
       label: "spinning-platform",
