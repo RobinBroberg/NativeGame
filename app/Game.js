@@ -7,6 +7,7 @@ import {
   Text,
   Vibration,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { GameEngine } from "react-native-game-engine";
 import Matter from "matter-js";
@@ -123,7 +124,7 @@ export default function Game() {
     Accelerometer.setUpdateInterval(16);
     const subscription = Accelerometer.addListener(({ x }) => {
       smoothed = smoothed * 0.8 + x * 0.2;
-      tiltRef.current = smoothed;
+      tiltRef.current = Platform.OS === "android" ? -smoothed : smoothed;
     });
 
     return () => {
